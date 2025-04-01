@@ -1,24 +1,19 @@
-import logo from './logo.svg';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import RegisterForm from './сomponents/RegisterForm';
+import AuthorizationForm from './сomponents/AuthorizationForm';
 import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+<Router>
+      <div className="App" style={{ height: '100vh' }}>
+        <Routes>
+          <Route path="/" element={<AuthorizationForm />} /> {/* Главная страница — авторизация */}
+          <Route path="/register" element={<RegisterForm />} /> {/* Страница регистрации */}
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

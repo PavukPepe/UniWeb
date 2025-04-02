@@ -1,0 +1,47 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-image: url('../assets/image.png'); /* Путь к изображению */
+    background-size: cover; /* Растягивает изображение на весь экран */
+    background-position: center; /* Центрирует изображение */
+    background-repeat: no-repeat; /* Отключает повторение */
+    color: #FFFFFF;
+    background-attachment: fixed;
+  }
+  
+  .object-fit-cover {
+    object-fit: cover;
+  }
+  
+  .sidebar {
+    min-height: 100vh;
+  }
+  
+  /* Стили для карточек курсов */
+  .card {
+    border: none;
+    transition: transform 0.2s;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
+  /* Адаптивность для мобильных устройств */
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 100% !important;
+      min-height: auto;
+    }
+  
+    .d-flex.min-vh-100 {
+      flex-direction: column;
+    }
+  }
+
+.navigation{
+    height: 100vh;
+    background-color: #28282875;
+}
+

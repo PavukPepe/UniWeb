@@ -1,0 +1,27 @@
+.nav-btn{
+  border-radius: 10px;
+}
+
+.bg-orange {
+  background-color: #ff3800 !important;
+}
+
+.btn-orange {
+  background-color: #ff3800;
+  border-color: #ff3800;
+  color: white;
+}
+
+.btn-orange:hover {
+  background-color: #e62e00;
+  border-color: #e62e00;
+  color: white;
+}
+
+.hover-bg-dark:hover {
+  background-color: #343a40;
+}
+
+.bg-black {
+  background-color: #000 !important;
+}

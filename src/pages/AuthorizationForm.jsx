@@ -47,7 +47,7 @@ const AuthorizationForm = () => {
     
           const result = await response.json();
           console.log('Успешная авторизация:', result);
-          navigate('/register'); 
+          navigate('/home'); 
         } catch (err) {
           setError(err.message || 'Что-то пошло не так');
         } finally {

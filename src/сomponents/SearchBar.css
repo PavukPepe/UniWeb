@@ -1,0 +1,8 @@
+.searcher{
+    border-radius: 10px;
+    background-color: #28282885;
+    input{
+        width: 100%;
+        background-color: transparent;
+    }
+}

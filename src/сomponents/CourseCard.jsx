@@ -1,15 +1,17 @@
 import { Link } from "react-router-dom"
 import './CourseCard.css';
 
+
 export function CourseCard({ course }) {
   return (
     <div className="card card-background text-white h-100" style={{ overflow: "hidden" }}>
       <div className="position-relative" style={{ height: "180px" }}>
-        <img src={course.image || "/placeholder.jpg"} alt={course.title} className="w-100 h-100 object-fit-cover" />
+        {/* <img src={course.image || "/placeholder.jpg"} alt={course.title} className="w-100 h-100 object-fit-cover" /> */}
+        <img src='course.png' alt={course.title} className="w-100 h-100 object-fit-cover" />
       </div>
 
       <div className="card-body">
-        <h5 className="card-title">{course.title}</h5>
+        <p className="card-title">{course.title}</p>
 
         <div className="d-flex align-items-center mb-2">
           {Array(5)
@@ -34,14 +36,14 @@ export function CourseCard({ course }) {
           <span className="text-secondary ms-1 small">/{course.reviewCount} отзывов</span>
         </div>
 
-        <div className="text-secondary small mb-3">{course.instructor}</div>
+        <div className="text-secondary mb-3">{course.instructor}</div>
 
         <div className="d-flex align-items-center gap-2">
-          <Link to={`/enroll/${course.id}`} className="btn btn-orange btn-sm">
+          <Link to={`/enroll/${course.id}`} className="btn btn-orange">
             Записаться
           </Link>
 
-          <Link to={`/course/${course.id}`} className="text-white text-decoration-none small">
+          <Link to={`/course/${course.id}`} className="text-white text-decoration-none">
             Программа курса
           </Link>
         </div>

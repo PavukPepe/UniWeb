@@ -76,9 +76,9 @@ function MainNav() {
       </Link>
 
       <Link
-        to="/blog"
+        to="/profile"
         className={`d-flex align-items-center gap-2 text-white text-decoration-none p-2 rounded ${
-          location.pathname === "/blog" ? "bg-orange" : "hover-bg-dark"
+          location.pathname === "/profile" ? "bg-orange" : "hover-bg-dark"
         }`}
       >
         <svg

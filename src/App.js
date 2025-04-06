@@ -6,6 +6,8 @@ import HomePage from './pages/HomePage';
 import DevBlog from './pages/DevBlog';
 import MyCourses from './pages/MyCourses';
 import './App.css';
+import CourseBuilder from './pages/CourseBilder';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
           <Route path="/register" element={<RegisterForm />} /> {/* Страница регистрации */}
           <Route path="/home" element={<HomePage />} />
           <Route path="/my-courses" element={<MyCourses />} />
+          <Route path="/coursebuilder" element={<CourseBuilder />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/blog" element={<DevBlog />} />
         </Routes>
       </div>

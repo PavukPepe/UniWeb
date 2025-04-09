@@ -1,6 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap-icons/font/bootstrap-icons.css"
 import "./ProfilePage.css"
+import { Link, useLocation } from "react-router-dom"
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -15,6 +16,7 @@ import {
 } from "chart.js"
 import MainNav from "../сomponents/MainNav.jsx"
 import { Line, Bar, Doughnut } from "react-chartjs-2"
+import { Button } from "bootstrap"
 
 // Регистрация компонентов Chart.js
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, ArcElement)
@@ -165,16 +167,15 @@ function ProfilePage() {
   return (
     <div className="d-flex min-vh-100 bg-dark">
       <MainNav />
-      <main className="container py-4 flex-grow-1 p-4">
+      <main className="container py-4 flex-grow-1 p-0">
         {/* Контактная информация */}
-        <div className="row mb-5">
-          <div className="col-md-8">
-            <div className="card bg-dark text-light border-secondary">
-              <div className="card-header border-secondary">
-                <h2 className="h5 mb-0">Контактная информация</h2>
+        <div className="row">
+          <div className="col-8">
+              <div>
+                <h2 className="h5 m-3 mt-0 ms-1">Контактная информация</h2>
               </div>
-              <div className="card-body">
-                <div className="row">
+              <div>
+                <div className="row dark-gray p-3">
                   <div className="col-md-4 text-center mb-3 mb-md-0">
                     <img
                       src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-koyrjhw89Qu9a4gBkl0hn2AD61QOwB.png"
@@ -192,7 +193,7 @@ function ProfilePage() {
                       <div className="col-sm-9">
                         <input
                           type="text"
-                          className="form-control bg-dark text-light border-secondary"
+                          className="form-control text-light "
                           value="Пилькевич"
                           readOnly
                         />
@@ -203,7 +204,7 @@ function ProfilePage() {
                       <div className="col-sm-9">
                         <input
                           type="text"
-                          className="form-control bg-dark text-light border-secondary"
+                          className="form-control  text-light border-secondary"
                           value="Сергей"
                           readOnly
                         />
@@ -214,7 +215,7 @@ function ProfilePage() {
                       <div className="col-sm-9">
                         <input
                           type="text"
-                          className="form-control bg-dark text-light border-secondary"
+                          className="form-control  text-light border-secondary"
                           value="Сергеевич"
                           readOnly
                         />
@@ -225,7 +226,7 @@ function ProfilePage() {
                       <div className="col-sm-9">
                         <input
                           type="email"
-                          className="form-control bg-dark text-light border-secondary"
+                          className="form-control  text-light border-secondary"
                           value="spiderman@example.com"
                           readOnly
                         />
@@ -236,7 +237,7 @@ function ProfilePage() {
                       <div className="col-sm-9">
                         <input
                           type="tel"
-                          className="form-control bg-dark text-light border-secondary"
+                          className="form-control  text-light border-secondary"
                           value="+7 (999) 123-45-67"
                           readOnly
                         />
@@ -244,75 +245,75 @@ function ProfilePage() {
                     </div>
                   </div>
                 </div>
-              </div>
+
             </div>
           </div>
-          <div className="col-md-4">
-            <div className="card bg-dark text-light border-secondary h-100">
-              <div className="card-header border-secondary">
-                <h2 className="h5 mb-0">Сертификаты</h2>
+          <div className="col-4 pe-0 d-flex flex-column">
+              <div style={{ flex: 0 }}>
+                <h2 className="h5 m-3 mt-0 ms-3">Сертификаты</h2>
               </div>
-              <div className="card-body">
-                <ul className="list-group list-group-flush bg-dark">
-                  {[1, 2, 3, 4].map((item) => (
-                    <li key={item} className="list-group-item bg-dark text-light border-secondary py-2">
-                      <div className="d-flex align-items-center">
-                        <i className="bi bi-file-earmark-pdf text-danger me-2 fs-5"></i>
-                        <div>
+              <div className="p-3 dark-gray flex-1" style={{ flex: 1   }}>
+                <ul className=" list-group-flush ps-3">
+                  {[1, 2, 3].map((item) => (
+                    <li key={item} className="list-group-item text-light dark-gray py-2">
+                      <div className="row align-items-center">
+                        <i className="bi bi-file-earmark-pdf text-danger me-2 fs-5 col-1"></i>
+                        <div className="col-6">
                           <div>Вход в IT от PDD</div>
                           <small className="text-secondary">Выдан: 15.03.2023</small>
                         </div>
-                        <button className="btn btn-sm btn-link ms-auto">
+                        <button className="btn btn-sm btn-link ms-auto col-3">
                           <i className="bi bi-download"></i>
                         </button>
                       </div>
                     </li>
                   ))}
                 </ul>
-              </div>
-              <div className="card-footer border-secondary">
-                <button className="btn btn-outline-light btn-sm w-100">
-                  <i className="bi bi-plus-circle me-1"></i> Загрузить сертификат
+                <button className="btn w-100">
+                  <i className="bi bi-plus me-1"></i> Загрузить сертификат
                 </button>
               </div>
-            </div>
           </div>
         </div>
 
         {/* Курсы созданные мной */}
         <div className="mb-5">
           <div className="d-flex justify-content-between align-items-center mb-4">
-            <h2 className="h5 mb-0">Курсы созданные мной</h2>
+            <h2 className="h5 m-3 ms-1">Курсы созданные мной</h2>
             {/* <button className="btn btn-outline-light btn-sm">
               <i className="bi bi-plus-circle me-1"></i> Создать курс
             </button> */}
           </div>
 
-          <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 bg-black p-3">
+          <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 dark-gray g-4 p-3">
           <div className="col m-0 p-1">
-                <button className="h-100 add-btn"> +
-                </button>
+          <Link to="/coursebuilder">
+            <button className="h-100 add-btn">
+              + 
+            </button>
+          </Link>
               </div>
             {myCourses.map((course) => (
               <div key={course.id} className="col m-0 p-1">
-                <div className="card card-background bg-dark text-light border-secondary h-100">
-                  <img src={course.image || "/placeholder.svg"} className="card-img-top" alt={course.title} />
+                <div className="card card-background  text-light border-secondary h-100">
+                  {/* <img src={course.image || "/placeholder.svg"} className="card-img-top" alt={course.title} /> */}
+                  <img src='course.png' className="card-img-top" alt={course.title} style={{ maxHeight:`200px` }}/>
                   <div className="card-body">
                     <h5 className="card-title">{course.title}</h5>
                     <p className="card-text small">{course.description}</p>
                   </div>
                   <ul className="list-group list-group-flush">
-                    <li className="list-group-item bg-dark text-light border-secondary d-flex justify-content-between">
+                    <li className="list-group-item  text-light border-secondary d-flex justify-content-between">
                       <span className="text-secondary">Студентов:</span>
                       <span>{course.students}</span>
                     </li>
-                    <li className="list-group-item bg-dark text-light border-secondary d-flex justify-content-between">
+                    <li className="list-group-item  text-light border-secondary d-flex justify-content-between">
                       <span className="text-secondary">Рейтинг:</span>
                       <span>
                         {course.rating} <i className="bi bi-star-fill text-warning"></i>
                       </span>
                     </li>
-                    <li className="list-group-item bg-dark text-light border-secondary">
+                    <li className="list-group-item  text-light border-secondary">
                       <span className="text-secondary d-block mb-1">Прогресс:</span>
                       <div className="progress bg-secondary">
                         <div
@@ -348,7 +349,7 @@ function ProfilePage() {
           {/* Общая статистика */}
           <div className="row mb-4">
             <div className="col-md-4">
-              <div className="card bg-dark text-light border-secondary mb-4">
+              <div className="card  text-light border-secondary mb-4">
                 <div className="card-header border-secondary">
                   <h3 className="h6 mb-0">Посещаемость за неделю</h3>
                 </div>
@@ -368,7 +369,7 @@ function ProfilePage() {
               </div>
             </div>
             <div className="col-md-4">
-              <div className="card bg-dark text-light border-secondary mb-4">
+              <div className="card  text-light border-secondary mb-4">
                 <div className="card-header border-secondary">
                   <h3 className="h6 mb-0">Активность по месяцам</h3>
                 </div>
@@ -388,7 +389,7 @@ function ProfilePage() {
               </div>
             </div>
             <div className="col-md-4">
-              <div className="card bg-dark text-light border-secondary mb-4">
+              <div className="card  text-light border-secondary mb-4">
                 <div className="card-header border-secondary">
                   <h3 className="h6 mb-0">Прогресс студентов</h3>
                 </div>
@@ -410,7 +411,7 @@ function ProfilePage() {
           <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {courseStats.map((course) => (
               <div key={course.id} className="col">
-                <div className="card bg-dark text-light border-secondary h-100">
+                <div className="card  text-light border-secondary h-100">
                   <div className="card-header border-secondary">
                     <h4 className="h6 mb-0">{course.title}</h4>
                   </div>

@@ -12,55 +12,78 @@ function HomePage() {
   const [courses, setCourses] = useState([])
   const [activeCategory, setActiveCategory] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  // Fetch categories
+  // Fetch categories from API
   useEffect(() => {
-    // Simulating API call
-    const fetchCategories = () => {
-      // This would be replaced with actual API call
-      const data = [
-        { id: 1, name: "Программирование" },
-        { id: 2, name: "Дизайн" },
-        { id: 3, name: "Маркетинг" },
-      ]
-      setCategories(data)
-      setActiveCategory(data[0])
-    }
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('http://localhost:5252/api/categories', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            // Если требуется токен из localStorage:
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            // Если используешь куки, добавь: credentials: 'include'
+          },
+        });
 
-    fetchCategories()
-  }, [])
+        if (!response.ok) {
+          throw new Error('Ошибка при загрузке категорий');
+        }
 
-  // Fetch courses
+        const data = await response.json();
+        setCategories(data);
+        setActiveCategory(data[0]); // Устанавливаем первую категорию активной
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // Fetch courses based on active category
   useEffect(() => {
-    if (!activeCategory) return
+    if (!activeCategory) return;
 
-    // Simulating API call
-    const fetchCourses = () => {
-      setIsLoading(true)
-      // This would be replaced with actual API call
-      setTimeout(() => {
-        const data = Array(8)
-          .fill(null)
-          .map((_, i) => ({
-            id: i + 1,
-            title: "Программирование на C#. Вводный курс",
-            rating: 4,
-            reviewCount: 16,
-            instructor: "Иванов И. И.",
-            image: "/placeholder.jpg",
-            category: activeCategory.id,
-          }))
-        setCourses(data)
-        setIsLoading(false)
-      }, 500)
-    }
+    const fetchCourses = async () => {
+      setIsLoading(true);
+      setError(null);
 
-    fetchCourses()
-  }, [activeCategory])
+      try {
+        const response = await fetch(
+          `http://localhost:5252/api/courses?categoryId=${activeCategory.id}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              // Если требуется токен:
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+              // Если куки: credentials: 'include'
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Ошибка при загрузке курсов');
+        }
+
+        const data = await response.json();
+        setCourses(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, [activeCategory]);
 
   const handleCategoryChange = (category) => {
-    setActiveCategory(category)
-  }
+    setActiveCategory(category);
+  };
 
   return (
     <div className="d-flex min-vh-100 col">
@@ -71,17 +94,23 @@ function HomePage() {
         </div>
 
         <div className="mb-4">
-          {activeCategory && (
+          {categories.length > 0 && activeCategory ? (
             <CategoryFilter
               categories={categories}
               activeCategory={activeCategory}
               onCategoryChange={handleCategoryChange}
             />
+          ) : (
+            <div className="text-white text-center">Загрузка категорий...</div>
           )}
         </div>
 
-        {isLoading ? (
+        {error ? (
+          <div className="text-danger text-center py-5">{error}</div>
+        ) : isLoading ? (
           <div className="text-white text-center py-5">Загрузка курсов...</div>
+        ) : courses.length === 0 ? (
+          <div className="text-white text-center py-5">Курсы не найдены</div>
         ) : (
           <div className="row g-4">
             {courses.map((course) => (
@@ -93,8 +122,7 @@ function HomePage() {
         )}
       </main>
     </div>
-  )
+  );
 }
 
-export default HomePage
-
+export default HomePage;

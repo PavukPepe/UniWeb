@@ -2,16 +2,16 @@ import { Link } from "react-router-dom"
 import './CourseCard.css';
 
 
-export function CourseCard({ course }) {
+export function CourseCard({ course, onClick }) {
   return (
-    <div className="card card-background text-white h-100" style={{ overflow: "hidden" }}>
+    <div className="card card-background text-white h-100" style={{ overflow: "hidden" }} onClick={onClick}>
       <div className="position-relative" style={{ height: "180px" }}>
         {/* <img src={course.image || "/placeholder.jpg"} alt={course.title} className="w-100 h-100 object-fit-cover" /> */}
         <img src='course.png' alt={course.title} className="w-100 h-100 object-fit-cover" />
       </div>
 
       <div className="card-body">
-        <p className="card-title">{course.title}</p>
+        <p className="card-title">{course.courseTitle}</p>
 
         <div className="d-flex align-items-center mb-2">
           {Array(5)

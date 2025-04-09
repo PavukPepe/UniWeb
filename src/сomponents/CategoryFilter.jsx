@@ -3,14 +3,14 @@ import './CategoryFilter.css';
 
 export function CategoryFilter({ categories, activeCategory, onCategoryChange }) {
   return (
-    <div className="d-flex flex-wrap gap-2">
+    <div className="d-flex flex-wrap">
       {categories.map((category) => (
         <button
-          key={category.id}
+          key={category.categoryId}
           onClick={() => onCategoryChange(category)}
-          className={`btn nav-btn ${category.id === activeCategory.id ? "btn-orange" : "btn-dark"}`}
+          className={`btn nav-btn col-4 ${category.categoryId === activeCategory.categoryId ? "btn-orange" : "btn-dark"}`}
         >
-          {category.name}
+          {category.categoryName}
         </button>
       ))}
     </div>

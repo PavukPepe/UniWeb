@@ -1,3 +1,9 @@
 .add-btn{
     border-radius: 10px;
+    background-color: #33333375;;
+}
+
+.dark-gray{
+    background-color: #0D0D0D;
+    border-radius: 10px;
 }

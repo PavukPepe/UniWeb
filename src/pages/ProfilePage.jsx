@@ -240,7 +240,7 @@ function ProfilePage() {
                       />
                       <div className="card-body">
                         <h5 className="card-title">{course.title}</h5>
-                        <p className="card-text small">{course.description}</p>
+                        <p className="card-text small description">{course.description}</p>
                       </div>
                       <ul className="list-group list-group-flush">
                         <li className="list-group-item text-light border-secondary d-flex justify-content-between">
@@ -253,7 +253,7 @@ function ProfilePage() {
                             {course.rating} <i className="bi bi-star-fill text-warning"></i>
                           </span>
                         </li>
-                        <li className="list-group-item text-light border-secondary">
+                        {/* <li className="list-group-item text-light border-secondary">
                           <span className="text-secondary d-block mb-1">Прогресс:</span>
                           <div className="progress bg-secondary">
                             <div
@@ -267,7 +267,7 @@ function ProfilePage() {
                               {course.progress}%
                             </div>
                           </div>
-                        </li>
+                        </li> */}
                       </ul>
                       <div className="card-footer border-secondary">
                         <div className="d-grid gap-2">

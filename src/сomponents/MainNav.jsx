@@ -53,7 +53,7 @@ function MainNav() {
       </Link>
 
       <Link
-        to="/blog"
+        to="/favorites"
         className={`d-flex align-items-center gap-2 text-white text-decoration-none p-2 rounded ${
           location.pathname === "/blog" ? "bg-orange" : "hover-bg-dark"
         }`}

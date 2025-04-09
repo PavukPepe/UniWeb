@@ -9,6 +9,7 @@ import './App.css';
 import CourseBuilder from './pages/CourseBilder';
 import ProfilePage from './pages/ProfilePage';
 import CoursePage from './pages/CoursePage';
+import FavoritesPage from "./pages/FavoritesPage.jsx";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/coursebuilder" element={<CourseBuilder />} />
           <Route path="/coursebuilder/:id" element={<CourseBuilder />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/favorites" element={<FavoritesPage />} />
         </Routes>
       </div>
     </Router>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import { CourseCard } from "../сomponents/CourseCard.jsx"
 import MainNav from "../сomponents/MainNav.jsx"
 import { SearchBar } from "../сomponents/SearchBar.jsx"
@@ -13,62 +14,39 @@ function HomePage() {
   const [activeCategory, setActiveCategory] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
+  const navigate = useNavigate()
 
-  // Fetch categories from API
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await fetch('http://localhost:5252/api/categories', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            // Если требуется токен из localStorage:
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-            // Если используешь куки, добавь: credentials: 'include'
-          },
+          headers: { 'Content-Type': 'application/json' },
         });
-
-        if (!response.ok) {
-          throw new Error('Ошибка при загрузке категорий');
-        }
-
+        if (!response.ok) throw new Error('Ошибка при загрузке категорий');
         const data = await response.json();
         setCategories(data);
-        setActiveCategory(data[0]); // Устанавливаем первую категорию активной
+        setActiveCategory(data[0]);
       } catch (err) {
         setError(err.message);
       }
     };
-
     fetchCategories();
   }, []);
 
-  // Fetch courses based on active category
   useEffect(() => {
     if (!activeCategory) return;
 
     const fetchCourses = async () => {
       setIsLoading(true);
       setError(null);
-
       try {
         const response = await fetch(
           `http://localhost:5252/api/courses?categoryId=${activeCategory.id}`,
           {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              // Если требуется токен:
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
-              // Если куки: credentials: 'include'
-            },
+            headers: { 'Content-Type': 'application/json' },
           }
         );
-
-        if (!response.ok) {
-          throw new Error('Ошибка при загрузке курсов');
-        }
-
+        if (!response.ok) throw new Error('Ошибка при загрузке курсов');
         const data = await response.json();
         setCourses(data);
       } catch (err) {
@@ -77,12 +55,15 @@ function HomePage() {
         setIsLoading(false);
       }
     };
-
     fetchCourses();
   }, [activeCategory]);
 
   const handleCategoryChange = (category) => {
     setActiveCategory(category);
+  };
+
+  const handleCourseClick = (courseId) => {
+    navigate(`/course/${courseId}`);
   };
 
   return (
@@ -115,7 +96,7 @@ function HomePage() {
           <div className="row g-4">
             {courses.map((course) => (
               <div key={course.id} className="col-12 col-md-6 col-lg-4">
-                <CourseCard course={course} />
+                <CourseCard course={course} onClick={() => handleCourseClick(course.courseId)} />
               </div>
             ))}
           </div>

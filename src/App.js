@@ -23,6 +23,9 @@ function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/blog" element={<DevBlog />} />
           <Route path="/course/:courseId" element={<CoursePage />} />
+          <Route path="/coursebuilder" element={<CourseBuilder />} />
+          <Route path="/coursebuilder/:id" element={<CourseBuilder />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Routes>
       </div>
     </Router>

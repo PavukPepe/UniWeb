@@ -11,7 +11,7 @@ export function CourseCard({ course, onClick }) {
       </div>
 
       <div className="card-body">
-        <p className="card-title">{course.courseTitle}</p>
+        <p className="card-title">{course.title}</p>
 
         <div className="d-flex align-items-center mb-2">
           {Array(5)

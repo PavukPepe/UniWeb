@@ -253,27 +253,16 @@ function ProfilePage() {
                             {course.rating} <i className="bi bi-star-fill text-warning"></i>
                           </span>
                         </li>
-                        {/* <li className="list-group-item text-light border-secondary">
-                          <span className="text-secondary d-block mb-1">Прогресс:</span>
-                          <div className="progress bg-secondary">
-                            <div
-                              className="progress-bar bg-success"
-                              role="progressbar"
-                              style={{ width: `${course.progress}%` }}
-                              aria-valuenow={course.progress}
-                              aria-valuemin="0"
-                              aria-valuemax="100"
-                            >
-                              {course.progress}%
-                            </div>
-                          </div>
-                        </li> */}
                       </ul>
                       <div className="card-footer border-secondary">
                         <div className="d-grid gap-2">
-                          <button className="btn btn-outline-light btn-sm">
-                            <i className="bi bi-pencil me-1"></i> Редактировать
-                          </button>
+                          <div className="card-footer border-secondary">
+                            <div className="d-grid gap-2">
+                              <Link to={`/coursebuilder/${course.id}`} className="btn btn-outline-light btn-sm">
+                                <i className="bi bi-pencil me-1"></i> Редактировать
+                              </Link>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>

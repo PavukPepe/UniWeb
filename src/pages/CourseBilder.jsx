@@ -1,12 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
-import "bootstrap/dist/css/bootstrap.min.css"
-import MainNav from "../сomponents/MainNav.jsx"
-import "bootstrap-icons/font/bootstrap-icons.css"
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom"; // Добавляем useParams
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import "bootstrap/dist/css/bootstrap.min.css";
+import MainNav from "../сomponents/MainNav.jsx";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 function CourseBuilder() {
+  const { id } = useParams()
   const [courseTitle, setCourseTitle] = useState("") // Добавлено для названия курса
   const [courseDescription, setCourseDescription] = useState("")
   const [categoryName, setCourseCategory] = useState("")
@@ -36,6 +38,45 @@ function CourseBuilder() {
     }
     fetchCategories()
   }, [])
+
+  useEffect(() => {
+    if (id) {
+      const fetchCourse = async () => {
+        try {
+          setLoading(true);
+          const response = await fetch(`http://localhost:5252/api/courses/${id}`);
+          if (!response.ok) throw new Error("Ошибка загрузки курса");
+          const data = await response.json();
+
+          // Заполняем состояние данными из API
+          setCourseTitle(data.title);
+          setCourseDescription(data.description);
+          setCourseCategory(data.categoryId || "");
+          setBlocks(
+            data.blocks.map((block, blockIndex) => ({
+              id: block.id || generateId(),
+              title: block.title,
+              topics: block.topics.map((topic, topicIndex) => ({
+                id: topic.id || generateId(),
+                title: topic.title,
+                steps: topic.steps.map((step, stepIndex) => ({
+                  id: step.id || generateId(),
+                  title: step.title,
+                  content: step.content || "",
+                })),
+              })),
+            }))
+          );
+        } catch (error) {
+          console.error("Ошибка при загрузке курса:", error);
+          alert("Не удалось загрузить курс");
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchCourse();
+    }
+  }, [id]);
 
   // Добавление нового блока
   const addBlock = () => {
@@ -311,15 +352,15 @@ function CourseBuilder() {
   // Сохранение курса через API
   const saveCourse = async () => {
     if (!courseTitle || !courseDescription || !categoryName) {
-      alert("Пожалуйста, заполните все обязательные поля: название, описание и категорию.")
-      return
+      alert("Пожалуйста, заполните все обязательные поля: название, описание и категорию.");
+      return;
     }
 
     const courseData = {
       title: courseTitle,
       description: courseDescription,
-      userId: localStorage.getItem('userId'),
-      categoryId: parseInt(categoryName, 10), // Предполагаем, что category_id — это число
+      userId: localStorage.getItem("userId"),
+      categoryId: parseInt(categoryName, 10),
       blocks: blocks.map((block, blockIndex) => ({
         title: block.title,
         order: blockIndex + 1,
@@ -330,42 +371,40 @@ function CourseBuilder() {
             title: step.title,
             content: step.content,
             order: stepIndex + 1,
-            type: "text", // Можно добавить выбор типа в UI позже
+            type: "text",
           })),
         })),
       })),
-    }
+    };
 
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:5252/api/courses", {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json",
-          },
-          body: JSON.stringify(courseData),
+      const method = id ? "PUT" : "POST"; // Используем PUT для обновления, POST для создания
+      const url = id
+        ? `http://localhost:5252/api/courses/${id}`
+        : "http://localhost:5252/api/courses";
+
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(courseData),
       });
 
       if (!response.ok) {
-          const errorMessage = await response.text();
-          throw new Error(errorMessage || "Ошибка при сохранении курса");
+        const errorMessage = await response.text();
+        throw new Error(errorMessage || "Ошибка при сохранении курса");
       }
 
       const result = await response.json();
-
-      if (result.error) {
-          throw new Error(result.error.message || "Ошибка при сохранении курса");
-      }
-
-      alert("Курс успешно сохранён!");
+      alert(id ? "Курс успешно обновлён!" : "Курс успешно сохранён!");
       console.log(result);
-  } catch (error) {
+    } catch (error) {
       console.error("Ошибка при сохранении курса:", error);
-      alert(`Произошла ошибка при сохранении курса: ${error.message}`);
-  } finally {
+      alert(`Произошла ошибка: ${error.message}`);
+    } finally {
       setLoading(false);
-  }
-  }
+    }
+  };
 
   return (
     <div className="d-flex min-vh-100 bg-dark">
@@ -612,15 +651,11 @@ function CourseBuilder() {
               </div>
 
               {/* Кнопка сохранения курса */}
-              <div className="mt-4">
-                <button
-                  onClick={saveCourse}
-                  className="btn btn-primary"
-                  disabled={loading}
-                >
-                  {loading ? "Сохранение..." : "Сохранить курс"}
-                </button>
-              </div>
+<div className="mt-4">
+            <button onClick={saveCourse} className="btn btn-primary" disabled={loading}>
+              {loading ? "Сохранение..." : id ? "Обновить курс" : "Сохранить курс"}
+            </button>
+          </div>
             </main>
           </div>
 

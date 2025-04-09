@@ -8,12 +8,13 @@ export function CategoryFilter({ categories, activeCategory, onCategoryChange })
         <button
           key={category.categoryId}
           onClick={() => onCategoryChange(category)}
-          className={`btn nav-btn col-4 ${category.categoryId === activeCategory.categoryId ? "btn-orange" : "btn-dark"}`}
+          className={`btn nav-btn col-4 ${
+            activeCategory && category.categoryId === activeCategory.categoryId ? "btn-orange" : "btn-dark"
+          }`}
         >
           {category.categoryName}
         </button>
       ))}
     </div>
-  )
+  );
 }
-

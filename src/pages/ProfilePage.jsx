@@ -23,7 +23,7 @@ import { Line, Bar, Doughnut } from "react-chartjs-2";
 // Регистрация компонентов Chart.js
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, ArcElement);
 
-// Моковые данные для общей статистики (оставим пока)
+// Моковые данные для статистики
 const lineChartData = {
   labels: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"],
   datasets: [
@@ -62,14 +62,26 @@ const doughnutChartData = {
 };
 
 function ProfilePage() {
+  const [userData, setUserData] = useState(null);
   const [myCourses, setMyCourses] = useState([]);
+  const [certificates, setCertificates] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    lastName: "",
+    firstName: "",
+    middleName: "",
+    email: "",
+    phone: "",
+  });
 
-  // Загрузка курсов пользователя с API
+  // Получаем userId из localStorage
+  const userId = localStorage.getItem('userId');
+
+  // Загрузка данных пользователя и сертификатов
   useEffect(() => {
-    const fetchMyCourses = async () => {
-      const userId = localStorage.getItem('userId'); // Получаем ID пользователя
+    const fetchUserData = async () => {
       if (!userId) {
         setError("Пользователь не авторизован");
         setIsLoading(false);
@@ -78,8 +90,45 @@ function ProfilePage() {
 
       setIsLoading(true);
       try {
+        const response = await fetch(`http://localhost:5252/api/users/${userId}`, {
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Ошибка: ${response.status} - ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        setUserData(data);
+        setCertificates(data.certificates || []);
+
+        // Инициализируем formData с данными пользователя
+        const { lastName, firstName, middleName } = splitFullName(data.fullName);
+        setFormData({
+          lastName,
+          firstName,
+          middleName,
+          email: data.email || "",
+          phone: data.phone || "Не указан",
+        });
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [userId]);
+
+  // Загрузка курсов пользователя
+  useEffect(() => {
+    const fetchMyCourses = async () => {
+      if (!userId) return;
+
+      try {
         const response = await fetch(`http://localhost:5252/api/courses/own?authorId=${userId}`, {
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
         });
 
         if (!response.ok) {
@@ -90,13 +139,68 @@ function ProfilePage() {
         setMyCourses(data);
       } catch (err) {
         setError(err.message);
-      } finally {
-        setIsLoading(false);
       }
     };
 
     fetchMyCourses();
-  }, []);
+  }, [userId]);
+
+  // Разделяем FullName на фамилию, имя и отчество
+  const splitFullName = (fullName) => {
+    if (!fullName) return { lastName: "", firstName: "", middleName: "" };
+    const parts = fullName.trim().split(" ");
+    return {
+      lastName: parts[0] || "",
+      firstName: parts[1] || "",
+      middleName: parts[2] || "",
+    };
+  };
+
+  // Обработчик изменения полей ввода
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  // Обработчик сохранения изменений
+  const handleSave = async () => {
+    try {
+      const updatedUser = {
+        ...userData,
+        fullName: `${formData.lastName} ${formData.firstName} ${formData.middleName}`.trim(),
+        email: formData.email,
+        phone: formData.phone === "Не указан" ? null : formData.phone, // Добавляем phone в модель
+      };
+
+      const response = await fetch(`http://localhost:5252/api/users/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedUser),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Ошибка: ${response.status} - ${response.statusText}`);
+      }
+
+      setUserData(updatedUser);
+      setIsEditing(false);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  // Обработчик отмены редактирования
+  const handleCancel = () => {
+    const { lastName, firstName, middleName } = splitFullName(userData.fullName);
+    setFormData({
+      lastName,
+      firstName,
+      middleName,
+      email: userData.email || "",
+      phone: userData.phone || "Не указан",
+    });
+    setIsEditing(false);
+  };
 
   return (
     <div className="d-flex min-vh-100 bg-dark">
@@ -105,106 +209,142 @@ function ProfilePage() {
         {/* Контактная информация */}
         <div className="row">
           <div className="col-8">
-            <div>
-              <h2 className="h5 m-3 mt-0 ms-1">Контактная информация</h2>
+            <div className="d-flex justify-content-between align-items-center m-3 mt-0 ms-1">
+              <h2 className="h5 m-0">Контактная информация</h2>
+              <div>
+                {!isEditing ? (
+                  <button className="btn btn-outline-light btn-sm me-3" onClick={() => setIsEditing(true)}>
+                    <i className="bi bi-pencil me-1"></i> Изменить
+                  </button>
+                ) : (
+                  <>
+                    <button className="btn btn-primary btn-sm me-2" onClick={handleSave}>
+                      Сохранить
+                    </button>
+                    <button className="btn btn-secondary btn-sm me-3" onClick={handleCancel}>
+                      Отмена
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
             <div>
-              <div className="row dark-gray p-3">
-                <div className="col-md-4 text-center mb-3 mb-md-0">
-                  <img
-                    src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-koyrjhw89Qu9a4gBkl0hn2AD61QOwB.png"
-                    alt="Фото профиля"
-                    className="img-fluid rounded"
-                    style={{ maxHeight: "200px" }}
-                  />
-                  <button className="btn btn-outline-light btn-sm mt-2">
-                    <i className="bi bi-pencil me-1"></i> Изменить фото
-                  </button>
+              {isLoading ? (
+                <div className="text-white text-center py-5">Загрузка...</div>
+              ) : error ? (
+                <div className="text-danger text-center py-5">{error}</div>
+              ) : (
+                <div className="row dark-gray p-3">
+                  <div className="col-md-4 text-center mb-3 mb-md-0">
+                    <img
+                      src={userData?.profilePicture || "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-koyrjhw89Qu9a4gBkl0hn2AD61QOwB.png"}
+                      alt="Фото профиля"
+                      className="img-fluid rounded"
+                      style={{ maxHeight: "200px" }}
+                    />
+                    <button className="btn btn-outline-light btn-sm mt-2">
+                      <i className="bi bi-pencil me-1"></i> Изменить фото
+                    </button>
+                  </div>
+                  <div className="col-md-8">
+                    <div className="mb-3 row">
+                      <label className="col-sm-3 col-form-label text-secondary">Фамилия</label>
+                      <div className="col-sm-9 d-flex align-items-center">
+                        <input
+                          type="text"
+                          name="lastName"
+                          className=" text-light"
+                          value={formData.lastName}
+                          onChange={handleInputChange}
+                          readOnly={!isEditing}
+                        />
+                      </div>
+                    </div>
+                    <div className="mb-3 row">
+                      <label className="col-sm-3 col-form-label text-secondary align-items-center">Имя</label>
+                      <div className="col-sm-9 d-flex align-items-center">
+                        <input
+                          type="text"
+                          name="firstName"
+                          className=" text-light border-secondary"
+                          value={formData.firstName}
+                          onChange={handleInputChange}
+                          readOnly={!isEditing}
+                        />
+                      </div>
+                    </div>
+                    <div className="mb-3 row">
+                      <label className="col-sm-3 col-form-label text-secondary">Отчество</label>
+                      <div className="col-sm-9 d-flex align-items-center">
+                        <input
+                          type="text"
+                          name="middleName"
+                          className=" text-light border-secondary"
+                          value={formData.middleName}
+                          onChange={handleInputChange}
+                          readOnly={!isEditing}
+                        />
+                      </div>
+                    </div>
+                    <div className="mb-3 row">
+                      <label className="col-sm-3 col-form-label text-secondary">Email</label>
+                      <div className="col-sm-9 d-flex align-items-center">
+                        <input
+                          type="email"
+                          name="email"
+                          className=" text-light border-secondary"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          readOnly={!isEditing}
+                        />
+                      </div>
+                    </div>
+                    
+                  </div>
                 </div>
-                <div className="col-md-8">
-                  <div className="mb-3 row">
-                    <label className="col-sm-3 col-form-label text-secondary">Фамилия</label>
-                    <div className="col-sm-9">
-                      <input
-                        type="text"
-                        className="form-control text-light"
-                        value="Пилькевич"
-                        readOnly
-                      />
-                    </div>
-                  </div>
-                  <div className="mb-3 row">
-                    <label className="col-sm-3 col-form-label text-secondary">Имя</label>
-                    <div className="col-sm-9">
-                      <input
-                        type="text"
-                        className="form-control text-light border-secondary"
-                        value="Сергей"
-                        readOnly
-                      />
-                    </div>
-                  </div>
-                  <div className="mb-3 row">
-                    <label className="col-sm-3 col-form-label text-secondary">Отчество</label>
-                    <div className="col-sm-9">
-                      <input
-                        type="text"
-                        className="form-control text-light border-secondary"
-                        value="Сергеевич"
-                        readOnly
-                      />
-                    </div>
-                  </div>
-                  <div className="mb-3 row">
-                    <label className="col-sm-3 col-form-label text-secondary">Email</label>
-                    <div className="col-sm-9">
-                      <input
-                        type="email"
-                        className="form-control text-light border-secondary"
-                        value="spiderman@example.com"
-                        readOnly
-                      />
-                    </div>
-                  </div>
-                  <div className="mb-3 row">
-                    <label className="col-sm-3 col-form-label text-secondary">Телефон</label>
-                    <div className="col-sm-9">
-                      <input
-                        type="tel"
-                        className="form-control text-light border-secondary"
-                        value="+7 (999) 123-45-67"
-                        readOnly
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
           </div>
           <div className="col-4 pe-0 d-flex flex-column">
-            <div style={{ flex: 0 }}>
-              <h2 className="h5 m-3 mt-0 ms-3">Сертификаты</h2>
+            <div style={{ flex: 0}} className=" m-3 mt-0 ms-3">
+              <h2 className="h5 m-0" style={{ height:31 }}>Сертификаты</h2>
             </div>
             <div className="p-3 dark-gray flex-1" style={{ flex: 1 }}>
-              <ul className="list-group-flush ps-3">
-                {[1, 2, 3].map((item) => (
-                  <li key={item} className="list-group-item text-light dark-gray py-2">
-                    <div className="row align-items-center">
-                      <i className="bi bi-file-earmark-pdf text-danger me-2 fs-5 col-1"></i>
-                      <div className="col-6">
-                        <div>Вход в IT от PDD</div>
-                        <small className="text-secondary">Выдан: 15.03.2023</small>
-                      </div>
-                      <button className="btn btn-sm btn-link ms-auto col-3">
-                        <i className="bi bi-download"></i>
-                      </button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-              <button className="btn w-100">
-                <i className="bi bi-plus me-1"></i> Загрузить сертификат
-              </button>
+              {isLoading ? (
+                <div className="text-white text-center py-5">Загрузка...</div>
+              ) : error ? (
+                <div className="text-danger text-center py-5">{error}</div>
+              ) : certificates.length === 0 ? (
+                <div className="text-white text-center py-5">Сертификаты отсутствуют</div>
+              ) : (
+                <>
+                  <ul className="list-group-flush ps-3">
+                    {certificates.map((certificate) => (
+                      <li key={certificate.certificateId} className="list-group-item text-light dark-gray py-2">
+                        <div className="row align-items-center">
+                          <i className="bi bi-file-earmark-pdf text-danger me-2 fs-5 col-1"></i>
+                          <div className="col-6">
+                            <div>{certificate.courseTitle || "Название курса"}</div>
+                            <small className="text-secondary">
+                              Выдан: {new Date(certificate.issueDate).toLocaleDateString()}
+                            </small>
+                          </div>
+                          <a
+                            href={certificate.certificateUrl || "#"}
+                            className="btn btn-sm btn-link ms-auto col-3"
+                            download
+                          >
+                            <i className="bi bi-download"></i>
+                          </a>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                  <button className="btn w-100">
+                    <i className="bi bi-plus me-1"></i> Загрузить сертификат
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -245,24 +385,20 @@ function ProfilePage() {
                       <ul className="list-group list-group-flush">
                         <li className="list-group-item text-light border-secondary d-flex justify-content-between">
                           <span className="text-secondary">Студентов:</span>
-                          <span>{course.students}</span>
+                          <span>{course.students || 0}</span>
                         </li>
                         <li className="list-group-item text-light border-secondary d-flex justify-content-between">
                           <span className="text-secondary">Рейтинг:</span>
                           <span>
-                            {course.rating} <i className="bi bi-star-fill text-warning"></i>
+                            {course.rating || 0} <i className="bi bi-star-fill text-warning"></i>
                           </span>
                         </li>
                       </ul>
                       <div className="card-footer border-secondary">
                         <div className="d-grid gap-2">
-                          <div className="card-footer border-secondary">
-                            <div className="d-grid gap-2">
-                              <Link to={`/coursebuilder/${course.id}`} className="btn btn-outline-light btn-sm">
-                                <i className="bi bi-pencil me-1"></i> Редактировать
-                              </Link>
-                            </div>
-                          </div>
+                          <Link to={`/coursebuilder/${course.id}`} className="btn btn-outline-light btn-sm">
+                            <i className="bi bi-pencil me-1"></i> Редактировать
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -277,7 +413,6 @@ function ProfilePage() {
         <div>
           <h2 className="h5 mb-4">Статистика</h2>
 
-          {/* Общая статистика */}
           <div className="row mb-4">
             <div className="col-md-4">
               <div className="card text-light border-secondary mb-4">
@@ -337,7 +472,6 @@ function ProfilePage() {
             </div>
           </div>
 
-          {/* Статистика по курсам пока оставим как есть */}
           <h3 className="h6 mb-3">Статистика по курсам</h3>
           <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {/* Здесь можно позже добавить динамическую статистику */}

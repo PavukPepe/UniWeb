@@ -426,22 +426,8 @@ function CourseBuilder() {
               Назад к курсам
             </button>
           </header>
-
-          <div className="d-flex flex-column flex-grow-1">
-            <main className="flex-grow-1 p-4">
-              <div className="row g-4">
-                <div className="col-md-8">
-                  <textarea
-                    placeholder="Введите описание курса..."
-                    className="form-control bg-dark text-light border-secondary"
-                    style={{ minHeight: "600px" }}
-                    value={courseDescription}
-                    onChange={(e) => setCourseDescription(e.target.value)}
-                  ></textarea>
-                </div>
-
-                <div className="col-md-4">
-                  <div className="mb-3">
+          <div className="row">
+                  <div className="mb-3 col-4">
                     <input
                       type="text"
                       placeholder="Введите название курса..."
@@ -450,7 +436,7 @@ function CourseBuilder() {
                       onChange={(e) => setCourseTitle(e.target.value)}
                     />
                   </div>
-                  <div className="mb-3">
+                  <div className="mb-3 col-4">
                     <select
                       className="form-select bg-dark text-light border-secondary"
                       value={categoryName}
@@ -464,11 +450,60 @@ function CourseBuilder() {
                       ))}
                     </select>
                   </div>
-                  <div className="mb-3">
+                  <div className="mb-3 col-4">
                     <input
                       type="file"
                       className="form-control bg-dark text-light border-secondary"
                     />
+                  </div>
+                </div>
+          <div className="d-flex flex-column flex-grow-1">
+            <main className="flex-grow-1">
+              <div className="row g-4">
+                <div>
+                  {/* Описание курса с Markdown */}
+                  <div className="row">
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Описание курса (Markdown)</label>
+                      <TextareaAutosize
+                        className="form-control bg-dark text-light border-secondary"
+                        minRows={10}
+                        value={courseDescription}
+                        onChange={(e) => setCourseDescription(e.target.value)}
+                        placeholder="Введите описание курса в формате Markdown..."
+                      />
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Предпросмотр описания</label>
+                      <div
+                        className="border border-secondary rounded p-3 bg-secondary bg-opacity-25 markdown-preview"
+                        style={{ minHeight: "200px", overflowY: "auto" }}
+                      >
+                        <ReactMarkdown
+                          components={{
+                            code({ node, inline, className, children, ...props }) {
+                              const match = /language-(\w+)/.exec(className || "");
+                              return !inline && match ? (
+                                <SyntaxHighlighter
+                                  style={dark}
+                                  language={match[1]}
+                                  PreTag="div"
+                                  {...props}
+                                >
+                                  {String(children).replace(/\n$/, "")}
+                                </SyntaxHighlighter>
+                              ) : (
+                                <code className={className} {...props}>
+                                  {children}
+                                </code>
+                              );
+                            },
+                          }}
+                        >
+                          {courseDescription}
+                        </ReactMarkdown>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

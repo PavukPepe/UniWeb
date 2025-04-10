@@ -1,8 +1,10 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import './CourseCard.css';
 
-export function CourseCard({ course, onClick }) {
+export function CourseCard({ course, onDoubleClick }) {
   const [isFavorite, setIsFavorite] = useState(false);
   const [error, setError] = useState(null);
 
@@ -85,7 +87,7 @@ export function CourseCard({ course, onClick }) {
   };
 
   return (
-    <div className="card card-background text-white h-100" style={{ overflow: "hidden" }} onClick={onClick}>
+    <div className="card card-background text-white h-100" style={{ overflow: "hidden" }} onDoubleClick={onDoubleClick}>
       <div className="position-relative" style={{ height: "180px" }}>
         <img src='course.png' alt={course.title || "Без названия"} className="w-100 h-100 object-fit-cover" />
         <i
@@ -129,8 +131,8 @@ export function CourseCard({ course, onClick }) {
         <div className="text-secondary mb-3">{course.instructor || "Инструктор не указан"}</div>
 
         <div className="d-flex align-items-center gap-2">
-          <Link to={`/enroll/${course.courseId}`} className="btn btn-orange">
-            Записаться
+          <Link to={`/payment/${course.courseId}`} className="btn btn-orange">
+            Приобрести
           </Link>
 
           <Link to={`/course/${course.courseId}`} className="text-white text-decoration-none">

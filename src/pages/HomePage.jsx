@@ -104,7 +104,7 @@ function HomePage() {
           <div className="row g-4">
             {courses.map((course) => (
               <div key={course.courseId} className="col-12 col-md-6 col-lg-4">
-                <CourseCard course={course} onClick={() => handleCourseClick(course.courseId)} />
+                <CourseCard course={course} onDoubleClick={() => handleCourseClick(course.courseId)} />
               </div>
             ))}
           </div>

@@ -1,44 +1,51 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom"; // Добавляем useParams
+import { useParams } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import "bootstrap/dist/css/bootstrap.min.css";
-import MainNav from "../сomponents/MainNav.jsx";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import MainNav from "../сomponents/MainNav.jsx";
+import Modal from "react-bootstrap/Modal"; // Импортируем Modal из react-bootstrap
+import ReactMarkdown from "react-markdown"; // Импортируем ReactMarkdown для рендеринга Markdown
+import TextareaAutosize from "react-textarea-autosize"; // Для автоматического изменения размера textarea
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import "./CourseBilder.css"
 
 function CourseBuilder() {
-  const { id } = useParams()
-  const [courseTitle, setCourseTitle] = useState("") // Добавлено для названия курса
-  const [courseDescription, setCourseDescription] = useState("")
-  const [categoryName, setCourseCategory] = useState("")
-  const [categories, setCategories] = useState([]) // Список категорий из API
-  const [blocks, setBlocks] = useState([])
-  const [editingItem, setEditingItem] = useState(null)
-  const [expandedTopics, setExpandedTopics] = useState({})
-  const [loading, setLoading] = useState(false) // Для индикации загрузки
+  const { id } = useParams();
+  const [courseTitle, setCourseTitle] = useState("");
+  const [courseDescription, setCourseDescription] = useState("");
+  const [categoryName, setCourseCategory] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [blocks, setBlocks] = useState([]);
+  const [editingItem, setEditingItem] = useState(null);
+  const [editingStep, setEditingStep] = useState(null); // Отдельное состояние для редактирования шага
+  const [expandedTopics, setExpandedTopics] = useState({});
+  const [loading, setLoading] = useState(false);
 
   // Генерация уникальных ID
-  const generateId = () => `id_${Math.random().toString(36).substr(2, 9)}`
+  const generateId = () => `id_${Math.random().toString(36).substr(2, 9)}`;
 
-  // Загрузка категорий с API при монтировании компонента
+  // Загрузка категорий с API
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        setLoading(true)
-        const response = await fetch("http://localhost:5252/api/categories") // Предполагаемый эндпоинт
-        const data = await response.json()
-        console.log(data)
-        setCategories(data) // Ожидаем массив объектов { id, name }
+        setLoading(true);
+        const response = await fetch("http://localhost:5252/api/categories");
+        const data = await response.json();
+        setCategories(data);
       } catch (error) {
-        console.error("Ошибка при загрузке категорий:", error)
+        console.error("Ошибка при загрузке категорий:", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchCategories()
-  }, [])
+    };
+    fetchCategories();
+  }, []);
 
+  // Загрузка курса, если есть id
   useEffect(() => {
     if (id) {
       const fetchCourse = async () => {
@@ -48,7 +55,6 @@ function CourseBuilder() {
           if (!response.ok) throw new Error("Ошибка загрузки курса");
           const data = await response.json();
 
-          // Заполняем состояние данными из API
           setCourseTitle(data.title);
           setCourseDescription(data.description);
           setCourseCategory(data.categoryId || "");
@@ -84,9 +90,9 @@ function CourseBuilder() {
       id: generateId(),
       title: `Новый блок ${blocks.length + 1}`,
       topics: [],
-    }
-    setBlocks([...blocks, newBlock])
-  }
+    };
+    setBlocks([...blocks, newBlock]);
+  };
 
   // Добавление новой темы в блок
   const addTopic = (blockId) => {
@@ -103,12 +109,12 @@ function CourseBuilder() {
                 steps: [],
               },
             ],
-          }
+          };
         }
-        return block
-      }),
-    )
-  }
+        return block;
+      })
+    );
+  };
 
   // Добавление нового шага в тему
   const addStep = (blockId, topicId) => {
@@ -129,21 +135,21 @@ function CourseBuilder() {
                       content: "",
                     },
                   ],
-                }
+                };
               }
-              return topic
+              return topic;
             }),
-          }
+          };
         }
-        return block
-      }),
-    )
-  }
+        return block;
+      })
+    );
+  };
 
   // Удаление блока
   const deleteBlock = (blockId) => {
-    setBlocks(blocks.filter((block) => block.id !== blockId))
-  }
+    setBlocks(blocks.filter((block) => block.id !== blockId));
+  };
 
   // Удаление темы
   const deleteTopic = (blockId, topicId) => {
@@ -153,12 +159,12 @@ function CourseBuilder() {
           return {
             ...block,
             topics: block.topics.filter((topic) => topic.id !== topicId),
-          }
+          };
         }
-        return block
-      }),
-    )
-  }
+        return block;
+      })
+    );
+  };
 
   // Удаление шага
   const deleteStep = (blockId, topicId, stepId) => {
@@ -172,16 +178,16 @@ function CourseBuilder() {
                 return {
                   ...topic,
                   steps: topic.steps.filter((step) => step.id !== stepId),
-                }
+                };
               }
-              return topic
+              return topic;
             }),
-          }
+          };
         }
-        return block
-      }),
-    )
-  }
+        return block;
+      })
+    );
+  };
 
   // Редактирование заголовка блока
   const startEditingBlock = (block) => {
@@ -189,8 +195,8 @@ function CourseBuilder() {
       type: "block",
       id: block.id,
       title: block.title,
-    })
-  }
+    });
+  };
 
   // Редактирование заголовка темы
   const startEditingTopic = (blockId, topic) => {
@@ -199,134 +205,140 @@ function CourseBuilder() {
       id: topic.id,
       title: topic.title,
       content: blockId,
-    })
-  }
+    });
+  };
 
-  // Редактирование шага
+  // Редактирование шага (открываем большое окно)
   const startEditingStep = (blockId, topicId, step) => {
-    setEditingItem({
-      type: "step",
+    setEditingStep({
+      blockId,
+      topicId,
       id: step.id,
       title: step.title,
-      content: `${blockId}|${topicId}|${step.content}`,
-    })
-  }
+      content: step.content || "",
+    });
+  };
 
-  // Сохранение изменений в редактируемом элементе
+  // Сохранение изменений в редактируемом элементе (для блоков и тем)
   const saveChanges = () => {
-    if (!editingItem) return
+    if (!editingItem) return;
 
     if (editingItem.type === "block") {
-      setBlocks(blocks.map((block) => (block.id === editingItem.id ? { ...block, title: editingItem.title } : block)))
+      setBlocks(blocks.map((block) => (block.id === editingItem.id ? { ...block, title: editingItem.title } : block)));
     } else if (editingItem.type === "topic") {
       setBlocks(
         blocks.map((block) => ({
           ...block,
           topics: block.topics.map((topic) =>
-            topic.id === editingItem.id ? { ...topic, title: editingItem.title } : topic,
+            topic.id === editingItem.id ? { ...topic, title: editingItem.title } : topic
           ),
-        })),
-      )
-    } else if (editingItem.type === "step") {
-      const [blockId, topicId] = editingItem.content.split("|")
-      setBlocks(
-        blocks.map((block) => {
-          if (block.id === blockId) {
-            return {
-              ...block,
-              topics: block.topics.map((topic) => {
-                if (topic.id === topicId) {
-                  return {
-                    ...topic,
-                    steps: topic.steps.map((step) =>
-                      step.id === editingItem.id
-                        ? { ...step, title: editingItem.title, content: editingItem.content.split("|")[2] || "" }
-                        : step,
-                    ),
-                  }
-                }
-                return topic
-              }),
-            }
-          }
-          return block
-        }),
-      )
+        }))
+      );
     }
-    setEditingItem(null)
-  }
+    setEditingItem(null);
+  };
+
+  // Сохранение изменений в шаге
+  const saveStepChanges = () => {
+    if (!editingStep) return;
+
+    setBlocks(
+      blocks.map((block) => {
+        if (block.id === editingStep.blockId) {
+          return {
+            ...block,
+            topics: block.topics.map((topic) => {
+              if (topic.id === editingStep.topicId) {
+                return {
+                  ...topic,
+                  steps: topic.steps.map((step) =>
+                    step.id === editingStep.id
+                      ? { ...step, title: editingStep.title, content: editingStep.content }
+                      : step
+                  ),
+                };
+              }
+              return topic;
+            }),
+          };
+        }
+        return block;
+      })
+    );
+    setEditingStep(null);
+  };
 
   // Переключение состояния аккордеона
   const toggleTopic = (topicId) => {
     setExpandedTopics({
       ...expandedTopics,
       [topicId]: !expandedTopics[topicId],
-    })
-  }
+    });
+  };
 
   // Обработка перетаскивания
   const handleDragEnd = (result) => {
-    if (!result.destination) return
+    if (!result.destination) return;
 
-    const { source, destination, type } = result
+    const { source, destination, type } = result;
 
     if (type === "block") {
-      const reorderedBlocks = [...blocks]
-      const [removed] = reorderedBlocks.splice(source.index, 1)
-      reorderedBlocks.splice(destination.index, 0, removed)
-      setBlocks(reorderedBlocks)
-      return
+      const reorderedBlocks = [...blocks];
+      const [removed] = reorderedBlocks.splice(source.index, 1);
+      reorderedBlocks.splice(destination.index, 0, removed);
+      setBlocks(reorderedBlocks);
+      return;
     }
 
     if (type === "topic") {
-      const blockId = source.droppableId
-      const block = blocks.find((b) => b.id === blockId)
-      if (!block) return
+      const blockId = source.droppableId;
+      const block = blocks.find((b) => b.id === blockId);
+      if (!block) return;
 
-      const reorderedTopics = [...block.topics]
-      const [removed] = reorderedTopics.splice(source.index, 1)
-      reorderedTopics.splice(destination.index, 0, removed)
+      const reorderedTopics = [...block.topics];
+      const [removed] = reorderedTopics.splice(source.index, 1);
+      reorderedTopics.splice(destination.index, 0, removed);
 
-      setBlocks(blocks.map((b) => (b.id === blockId ? { ...b, topics: reorderedTopics } : b)))
-      return
+      setBlocks(blocks.map((b) => (b.id === blockId ? { ...b, topics: reorderedTopics } : b)));
+      return;
     }
 
     if (type === "step") {
-      const [blockId, topicId] = source.droppableId.split("|")
-      const block = blocks.find((b) => b.id === blockId)
-      if (!block) return
+      const [blockId, topicId] = source.droppableId.split("|");
+      const block = blocks.find((b) => b.id === blockId);
+      if (!block) return;
 
-      const topic = block.topics.find((t) => t.id === topicId)
-      if (!topic) return
+      const topic = block.topics.find((t) => t.id === topicId);
+      if (!topic) return;
 
       if (source.droppableId === destination.droppableId) {
-        const reorderedSteps = [...topic.steps]
-        const [removed] = reorderedSteps.splice(source.index, 1)
-        reorderedSteps.splice(destination.index, 0, removed)
+        const reorderedSteps = [...topic.steps];
+        const [removed] = reorderedSteps.splice(source.index, 1);
+        reorderedSteps.splice(destination.index, 0, removed);
 
         setBlocks(
           blocks.map((b) =>
             b.id === blockId
               ? {
-                  ...b,
-                  topics: b.topics.map((t) => (t.id === topicId ? { ...t, steps: reorderedSteps } : t)),
-                }
-              : b,
-          ),
-        )
+                ...b,
+                topics: b.topics.map((t) => (t.id === topicId ? { ...t, steps: reorderedSteps } : t)),
+              }
+              : b
+          )
+        );
       } else {
-        const [destBlockId, destTopicId] = destination.droppableId.split("|")
-        const destBlock = blocks.find((b) => b.id === destBlockId)
-        if (!destBlock) return
+        const [destBlockId, destTopicId] = destination.droppableId.split("|");
+        const destBlock = blocks.find((b) => b.id === destBlockId);
+        if (!destBlock) return;
 
-        const destTopic = destBlock.topics.find((t) => t.id === destTopicId)
-        if (!destTopic) return
+        const destTopic = destBlock.topics.find((t) => t.id === destTopicId);
+        if (!destTopic) return;
 
-        const step = topic.steps[source.index]
-        const sourceTopicSteps = [...topic.steps]
-        sourceTopicSteps.splice(source.index, 1)
-        const destTopicSteps = [...destTopic.steps]
-        destTopicSteps.splice(destination.index, 0, step)
+        const step = topic.steps[source.index];
+        const sourceTopicSteps = [...topic.steps];
+        sourceTopicSteps.splice(source.index, 1);
+        const destTopicSteps = [...destTopic.steps];
+        destTopicSteps.splice(destination.index, 0, step);
 
         setBlocks(
           blocks.map((b) => {
@@ -334,20 +346,20 @@ function CourseBuilder() {
               return {
                 ...b,
                 topics: b.topics.map((t) => (t.id === topicId ? { ...t, steps: sourceTopicSteps } : t)),
-              }
+              };
             }
             if (b.id === destBlockId) {
               return {
                 ...b,
                 topics: b.topics.map((t) => (t.id === destTopicId ? { ...t, steps: destTopicSteps } : t)),
-              }
+              };
             }
-            return b
-          }),
-        )
+            return b;
+          })
+        );
       }
     }
-  }
+  };
 
   // Сохранение курса через API
   const saveCourse = async () => {
@@ -379,10 +391,8 @@ function CourseBuilder() {
 
     try {
       setLoading(true);
-      const method = id ? "PUT" : "POST"; // Используем PUT для обновления, POST для создания
-      const url = id
-        ? `http://localhost:5252/api/courses/${id}`
-        : "http://localhost:5252/api/courses";
+      const method = id ? "PUT" : "POST";
+      const url = id ? `http://localhost:5252/api/courses/${id}` : "http://localhost:5252/api/courses";
 
       const response = await fetch(url, {
         method,
@@ -449,7 +459,7 @@ function CourseBuilder() {
                       <option value="">Выберите категорию...</option>
                       {categories.map((category) => (
                         <option key={category.categoryId} value={category.categoryId}>
-                          {category.categoryName}                                      
+                          {category.categoryName}
                         </option>
                       ))}
                     </select>
@@ -516,9 +526,8 @@ function CourseBuilder() {
                                               >
                                                 <h2 className="accordion-header">
                                                   <button
-                                                    className={`accordion-button ${
-                                                      !expandedTopics[topic.id] ? "collapsed" : ""
-                                                    } bg-secondary bg-opacity-50 text-light`}
+                                                    className={`accordion-button ${!expandedTopics[topic.id] ? "collapsed" : ""
+                                                      } bg-secondary bg-opacity-50 text-light`}
                                                     type="button"
                                                     onClick={() => toggleTopic(topic.id)}
                                                   >
@@ -531,9 +540,8 @@ function CourseBuilder() {
                                                   </button>
                                                 </h2>
                                                 <div
-                                                  className={`accordion-collapse collapse ${
-                                                    expandedTopics[topic.id] ? "show" : ""
-                                                  }`}
+                                                  className={`accordion-collapse collapse ${expandedTopics[topic.id] ? "show" : ""
+                                                    }`}
                                                 >
                                                   <div className="accordion-body">
                                                     <div className="d-flex justify-content-end gap-2 mb-3">
@@ -651,25 +659,22 @@ function CourseBuilder() {
               </div>
 
               {/* Кнопка сохранения курса */}
-<div className="mt-4">
-            <button onClick={saveCourse} className="btn btn-primary" disabled={loading}>
-              {loading ? "Сохранение..." : id ? "Обновить курс" : "Сохранить курс"}
-            </button>
-          </div>
+              <div className="mt-4">
+                <button onClick={saveCourse} className="btn btn-primary" disabled={loading}>
+                  {loading ? "Сохранение..." : id ? "Обновить курс" : "Сохранить курс"}
+                </button>
+              </div>
             </main>
           </div>
 
+          {/* Модальное окно для редактирования блоков и тем */}
           {editingItem && (
             <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
               <div className="modal-dialog modal-dialog-centered">
                 <div className="modal-content bg-dark text-light border-secondary">
                   <div className="modal-header border-secondary">
                     <h5 className="modal-title">
-                      {editingItem.type === "block"
-                        ? "Редактирование блока"
-                        : editingItem.type === "topic"
-                        ? "Редактирование темы"
-                        : "Редактирование шага"}
+                      {editingItem.type === "block" ? "Редактирование блока" : "Редактирование темы"}
                     </h5>
                     <button
                       type="button"
@@ -687,21 +692,6 @@ function CourseBuilder() {
                         onChange={(e) => setEditingItem({ ...editingItem, title: e.target.value })}
                       />
                     </div>
-                    {editingItem.type === "step" && (
-                      <div className="mb-3">
-                        <label className="form-label">Содержание</label>
-                        <textarea
-                          className="form-control bg-dark text-light border-secondary"
-                          rows="5"
-                          value={editingItem.content?.split("|")[2] || ""}
-                          onChange={(e) => {
-                            const parts = editingItem.content?.split("|") || []
-                            parts[2] = e.target.value
-                            setEditingItem({ ...editingItem, content: parts.join("|") })
-                          }}
-                        ></textarea>
-                      </div>
-                    )}
                   </div>
                   <div className="modal-footer border-secondary">
                     <button type="button" className="btn btn-secondary" onClick={() => setEditingItem(null)}>
@@ -716,10 +706,80 @@ function CourseBuilder() {
               </div>
             </div>
           )}
+
+          {/* Модальное окно для редактирования шага с поддержкой Markdown */}
+          {editingStep && (
+            <Modal
+              show={true}
+              onHide={() => setEditingStep(null)}
+              dialogClassName="text-light w-100 m-0 p-5 vh-100 step-mark"
+            >
+              <Modal.Header closeButton className="bg-dark text-light border-secondary">
+                <Modal.Title>Редактирование шага</Modal.Title>
+              </Modal.Header>
+              <Modal.Body className="bg-dark text-light">
+                <div className="mb-3">
+                  <label className="form-label">Название шага</label>
+                  <input
+                    type="text"
+                    className="form-control bg-dark text-light border-secondary"
+                    value={editingStep.title}
+                    onChange={(e) => setEditingStep({ ...editingStep, title: e.target.value })}
+                  />
+                </div>
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Содержание (Markdown)</label>
+                    <TextareaAutosize
+                      className="form-control bg-dark text-light border-secondary"
+                      minRows={10}
+                      value={editingStep.content}
+                      onChange={(e) => setEditingStep({ ...editingStep, content: e.target.value })}
+                    />
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Предпросмотр</label>
+                    <div
+                      className="border border-secondary rounded p-3 bg-secondary bg-opacity-25"
+                      style={{ minHeight: "200px", overflowY: "auto" }}
+                    >
+                      <ReactMarkdown
+                        components={{
+                          code({ node, inline, className, children, ...props }) {
+                            const match = /language-(\w+)/.exec(className || "");
+                            return !inline && match ? (
+                              <SyntaxHighlighter style={dark} language={match[1]} PreTag="div" {...props}>
+                                {String(children).replace(/\n$/, "")}
+                              </SyntaxHighlighter>
+                            ) : (
+                              <code className={className} {...props}>
+                                {children}
+                              </code>
+                            );
+                          },
+                        }}
+                      >
+                        {editingStep.content}
+                      </ReactMarkdown>
+                    </div>
+                  </div>
+                </div>
+              </Modal.Body>
+              <Modal.Footer className="bg-dark border-secondary">
+                <button className="btn btn-secondary" onClick={() => setEditingStep(null)}>
+                  Отмена
+                </button>
+                <button className="btn btn-primary" onClick={saveStepChanges}>
+                  <i className="bi bi-save me-2"></i>
+                  Сохранить
+                </button>
+              </Modal.Footer>
+            </Modal>
+          )}
         </div>
       </main>
     </div>
-  )
+  );
 }
 
-export default CourseBuilder
+export default CourseBuilder;

@@ -1,0 +1,24 @@
+/* В вашем CSS-файле (например, CourseBuilder.css) */
+.markdown-preview {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  
+  .markdown-preview h1,
+  .markdown-preview h2,
+  .markdown-preview h3 {
+    margin-bottom: 0.5em;
+  }
+  
+  .markdown-preview p {
+    margin-bottom: 1em;
+  }
+  
+  .markdown-preview ul {
+    padding-left: 20px;
+  }
+
+.step-mark {
+    max-width: 100% !important;
+    min-height: 80%;
+}

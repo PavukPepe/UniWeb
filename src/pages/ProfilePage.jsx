@@ -239,8 +239,8 @@ function ProfilePage() {
                     <img
                       src={userData?.profilePicture || "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-koyrjhw89Qu9a4gBkl0hn2AD61QOwB.png"}
                       alt="Фото профиля"
-                      className="img-fluid rounded"
-                      style={{ maxHeight: "200px" }}
+                      className="img-fluid rounded mb-2"
+                      style={{ height: 250, width:250 }}
                     />
                     <button className="btn btn-outline-light btn-sm mt-2">
                       <i className="bi bi-pencil me-1"></i> Изменить фото
@@ -350,7 +350,7 @@ function ProfilePage() {
         </div>
 
         {/* Курсы созданные мной */}
-        <div className="mb-5">
+        <div className="mb-0">
           <div className="d-flex justify-content-between align-items-center mb-4">
             <h2 className="h5 m-3 ms-1">Курсы созданные мной</h2>
           </div>
@@ -411,11 +411,11 @@ function ProfilePage() {
 
         {/* Статистика */}
         <div>
-          <h2 className="h5 mb-4">Статистика</h2>
+          <h2 className="h5 m-3">Статистика</h2>
 
-          <div className="row mb-4">
-            <div className="col-md-4">
-              <div className="card text-light border-secondary mb-4">
+          <div className="row dark-gray p-3">
+            <div className="col-md-4 m-0 p-1">
+              <div className="card bg-dark m-0 text-light border-secondary mb-4">
                 <div className="card-header border-secondary">
                   <h3 className="h6 mb-0">Посещаемость за неделю</h3>
                 </div>
@@ -434,8 +434,8 @@ function ProfilePage() {
                 </div>
               </div>
             </div>
-            <div className="col-md-4">
-              <div className="card text-light border-secondary mb-4">
+            <div className="col-md-4 m-0 p-1">
+              <div className="card bg-dark text-light border-secondary mb-4">
                 <div className="card-header border-secondary">
                   <h3 className="h6 mb-0">Активность по месяцам</h3>
                 </div>
@@ -454,10 +454,10 @@ function ProfilePage() {
                 </div>
               </div>
             </div>
-            <div className="col-md-4">
-              <div className="card text-light border-secondary mb-4">
+            <div className="col-md-4 m-0 p-1">
+              <div className="card bg-dark text-light border-secondary mb-4">
                 <div className="card-header border-secondary">
-                  <h3 className="h6 mb-0">Прогресс студентов</h3>
+                  <h3 className="h6  mb-0">Прогресс студентов</h3>
                 </div>
                 <div className="card-body">
                   <Doughnut
@@ -472,7 +472,7 @@ function ProfilePage() {
             </div>
           </div>
 
-          <h3 className="h6 mb-3">Статистика по курсам</h3>
+          <h3 className="h5 m-3">Статистика по курсам</h3>
           <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {/* Здесь можно позже добавить динамическую статистику */}
           </div>

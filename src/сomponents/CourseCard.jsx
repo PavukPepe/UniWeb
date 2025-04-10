@@ -99,8 +99,10 @@ export function CourseCard({ course, onClick }) {
         {error && (
           <div className="text-danger small mb-2">{error}</div>
         )}
-        <p className="card-title">{course.title || "Без названия"}</p>
-
+        <div className="row d-flex">
+          <p className="card-title col">{course.title || "Без названия"}</p>
+          <p className="card-title col d-flex justify-content-end">{course.price + " ₽" || "Бесплатно"}</p>
+        </div>
         <div className="d-flex align-items-center mb-2">
           {Array(5)
             .fill(null)

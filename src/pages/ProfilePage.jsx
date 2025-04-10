@@ -374,7 +374,7 @@ function ProfilePage() {
                     <div className="card card-background text-light border-secondary h-100">
                       <img
                         src={course.image || "/placeholder.svg?height=150&width=250"}
-                        className="card-img-top"
+                        className="card-img-top object-fit-cover"
                         alt={course.title}
                         style={{ maxHeight: "200px" }}
                       />

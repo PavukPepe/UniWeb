@@ -4,7 +4,7 @@ import RegisterForm from './pages/RegisterForm';
 import AuthorizationForm from './pages/AuthorizationForm';
 import HomePage from './pages/HomePage';
 import DevBlog from './pages/DevBlog';
-import MyCourses from './pages/MyCourses';
+import MyCoursesPage from './pages/MyCoursesPage';
 import './App.css';
 import PaymentPage from "./pages/PaymentPage";
 import CourseBuilder from './pages/CourseBilder';
@@ -20,7 +20,7 @@ function App() {
           <Route path="/" element={<AuthorizationForm />} /> {/* Главная страница — авторизация */}
           <Route path="/register" element={<RegisterForm />} /> {/* Страница регистрации */}
           <Route path="/home" element={<HomePage />} />
-          <Route path="/my-courses" element={<MyCourses />} />
+          <Route path="/my-courses" element={<MyCoursesPage />} />
           <Route path="/coursebuilder" element={<CourseBuilder />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/blog" element={<DevBlog />} />

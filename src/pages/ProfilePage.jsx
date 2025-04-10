@@ -211,17 +211,17 @@ function ProfilePage() {
           <div className="col-8">
             <div className="d-flex justify-content-between align-items-center m-3 mt-0 ms-1">
               <h2 className="h5 m-0">Контактная информация</h2>
-              <div>
+              <div className="row w-50 gap-2">
                 {!isEditing ? (
                   <button className="btn btn-outline-light btn-sm me-3" onClick={() => setIsEditing(true)}>
                     <i className="bi bi-pencil me-1"></i> Изменить
                   </button>
                 ) : (
                   <>
-                    <button className="btn btn-primary btn-sm me-2" onClick={handleSave}>
+                    <button className="btn btn-outline-light btn-sm col" onClick={handleSave}>
                       Сохранить
                     </button>
-                    <button className="btn btn-secondary btn-sm me-3" onClick={handleCancel}>
+                    <button className="btn btn-outline-light btn-sm col" onClick={handleCancel}>
                       Отмена
                     </button>
                   </>

@@ -80,7 +80,7 @@ function HomePage() {
           <SearchBar />
         </div>
 
-        <div className="mb-4">
+        <div className="mb-4 align-items-center justify-content-center d-flex">
           {categories.length > 0 ? (
             <CategoryFilter
               categories={categories}

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./ProfilePage.css";
@@ -240,7 +240,7 @@ function ProfilePage() {
                       src={userData?.profilePicture || "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-koyrjhw89Qu9a4gBkl0hn2AD61QOwB.png"}
                       alt="Фото профиля"
                       className="img-fluid rounded mb-2"
-                      style={{ height: 250, width:250 }}
+                      style={{ height: 250, width: 250 }}
                     />
                     <button className="btn btn-outline-light btn-sm mt-2">
                       <i className="bi bi-pencil me-1"></i> Изменить фото
@@ -299,15 +299,23 @@ function ProfilePage() {
                         />
                       </div>
                     </div>
-                    
+
                   </div>
                 </div>
               )}
             </div>
           </div>
           <div className="col-4 pe-0 d-flex flex-column">
-            <div style={{ flex: 0}} className=" m-3 mt-0 ms-3">
+            {/* <div style={{ flex: 0}} className=" m-3 mt-0 ms-3">
               <h2 className="h5 m-0" style={{ height:31 }}>Сертификаты</h2>
+            </div> */}
+            <div className="d-flex justify-content-between align-items-center m-3 mt-0 ms-3">
+              <h2 className="h5 m-0">Сертификаты</h2>
+              <div className="row w-50 gap-2">
+                <Link className="btn btn-outline-light btn-sm me-3" to="/">
+                Выйти  <i className="bi bi-box-arrow-right ms-1"></i>
+                </Link>
+              </div>
             </div>
             <div className="p-3 dark-gray flex-1" style={{ flex: 1 }}>
               {isLoading ? (
@@ -367,7 +375,7 @@ function ProfilePage() {
                 </Link>
               </div>
               {myCourses.length === 0 ? (
-                <div className="col-12 text-white text-center">Вы ещё не создали курсы</div>
+                <div className="ms-5 col text-white d-flex align-items-center m-0">Вы ещё не создали курсы</div>
               ) : (
                 myCourses.map((course) => (
                   <div key={course.id} className="col m-0 p-1">
@@ -394,7 +402,7 @@ function ProfilePage() {
                           </span>
                         </li>
                       </ul>
-                      <div className="card-footer border-secondary">
+                      <div className="card-footer border-secondary my-2">
                         <div className="d-grid gap-2">
                           <Link to={`/coursebuilder/${course.id}`} className="btn btn-outline-light btn-sm">
                             <i className="bi bi-pencil me-1"></i> Редактировать
@@ -415,15 +423,16 @@ function ProfilePage() {
 
           <div className="row dark-gray p-3">
             <div className="col-md-4 m-0 p-1">
-              <div className="card bg-dark m-0 text-light border-secondary mb-4">
+              <div className="dark-gray p-3 bg-dark m-0 text-light border-secondary">
                 <div className="card-header border-secondary">
-                  <h3 className="h6 mb-0">Посещаемость за неделю</h3>
+                  <h3 className="h6 mb-2">Посещаемость за неделю</h3>
                 </div>
-                <div className="card-body">
+                <div className="card-body" style={{ height:400 }}>
                   <Line
                     data={lineChartData}
                     options={{
                       responsive: true,
+                      maintainAspectRatio: false,
                       plugins: { legend: { labels: { color: "#fff" } } },
                       scales: {
                         x: { ticks: { color: "#adb5bd" }, grid: { color: "#2c3034" } },
@@ -435,15 +444,16 @@ function ProfilePage() {
               </div>
             </div>
             <div className="col-md-4 m-0 p-1">
-              <div className="card bg-dark text-light border-secondary mb-4">
+              <div className="dark-gray p-3 bg-dark text-light border-secondary">
                 <div className="card-header border-secondary">
-                  <h3 className="h6 mb-0">Активность по месяцам</h3>
+                  <h3 className="h6 mb-2">Активность по месяцам</h3>
                 </div>
-                <div className="card-body">
+                <div className="card-body" style={{ height:400 }}>
                   <Bar
                     data={barChartData}
                     options={{
                       responsive: true,
+                      maintainAspectRatio: false,
                       plugins: { legend: { labels: { color: "#fff" } } },
                       scales: {
                         x: { ticks: { color: "#adb5bd" }, grid: { color: "#2c3034" } },
@@ -455,11 +465,11 @@ function ProfilePage() {
               </div>
             </div>
             <div className="col-md-4 m-0 p-1">
-              <div className="card bg-dark text-light border-secondary mb-4">
+              <div className="dark-gray p-3 bg-dark text-light border-secondary">
                 <div className="card-header border-secondary">
-                  <h3 className="h6  mb-0">Прогресс студентов</h3>
+                  <h3 className="h6 mb-2">Прогресс студентов</h3>
                 </div>
-                <div className="card-body">
+                <div className="card-body" style={{ height:400 }}>
                   <Doughnut
                     data={doughnutChartData}
                     options={{

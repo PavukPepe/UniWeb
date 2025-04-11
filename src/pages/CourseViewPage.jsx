@@ -1,4 +1,3 @@
-// components/CourseViewPage.jsx
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import CourseStructure from "./CourseStructure";
@@ -12,40 +11,45 @@ function CourseViewPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const isInitialMount = useRef(true);
-  
+
     useEffect(() => {
-      const fetchCourse = async () => {
-        try {
-          const response = await fetch(`http://localhost:5252/api/Courses/${courseId}`, {
-            headers: { "Content-Type": "application/json" },
-          });
-          if (!response.ok) {
-            throw new Error("Ошибка загрузки курса");
-          }
-          const data = await response.json();
-          setCourse(data);
-          setLoading(false);
-  
-          if (
-            isInitialMount.current &&
-            !stepId &&
-            data.blocks?.length > 0 &&
-            data.blocks[0].topics?.length > 0 &&
-            data.blocks[0].topics[0].steps?.length > 0
-          ) {
-            navigate(`/courses/${courseId}/step/${data.blocks[0].topics[0].steps[0].id}`, { replace: true });
-          }
-        } catch (err) {
-          setError(err.message);
-          setLoading(false);
-        }
-      };
-      fetchCourse();
-      isInitialMount.current = false;
+        const fetchCourse = async () => {
+            const userId = localStorage.getItem("userId"); // Получаем userId из LocalStorage
+            try {
+                const response = await fetch(
+                    `http://localhost:5252/api/Courses/${courseId}${userId ? `?userId=${userId}` : ""}`,
+                    {
+                        headers: { "Content-Type": "application/json" },
+                    }
+                );
+                if (!response.ok) {
+                    throw new Error("Ошибка загрузки курса");
+                }
+                const data = await response.json();
+                setCourse(data);
+                setLoading(false);
+
+                if (
+                    isInitialMount.current &&
+                    !stepId &&
+                    data.blocks?.length > 0 &&
+                    data.blocks[0].topics?.length > 0 &&
+                    data.blocks[0].topics[0].steps?.length > 0
+                ) {
+                    navigate(`/courses/${courseId}/step/${data.blocks[0].topics[0].steps[0].id}`, { replace: true });
+                }
+            } catch (err) {
+                setError(err.message);
+                setLoading(false);
+            }
+        };
+        fetchCourse();
+        isInitialMount.current = false;
     }, [courseId, navigate]);
-  
+
     if (loading) return <div className="text-white">Загрузка...</div>;
     if (error) return <div className="text-danger">{error}</div>;
+
     return (
         <div className="d-flex min-vh-100 bg-dark">
             <CourseStructure blocks={course?.blocks} courseId={courseId} />
@@ -54,14 +58,9 @@ function CourseViewPage() {
                     <h2 className="text-white fs-4 fw-bold m-0">{course?.title}</h2>
                     <button className="btn btn-outline-light m-0 col-2 align-self-end" onClick={() => navigate('/my-courses')}>Назад к курсам</button>
                 </div>
-                <StepContent blocks={course?.blocks}/>
-                <div className="d-flex justify-content-between">
-                    <button className="btn btn-outline-light mb-3 col-2" onClick={() => navigate('/home')}>Назад</button>
-                    <button className="btn btn-outline-light mb-3 col-2" onClick={() => navigate('/home')}>Вперед</button>
-                </div>
+                <StepContent blocks={course?.blocks} />
             </main>
-        </div>
-    );
+        </div>)
 }
 
 export default CourseViewPage;

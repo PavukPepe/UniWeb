@@ -5,23 +5,19 @@ import { ChevronDown, ChevronUp } from "react-bootstrap-icons";
 function CourseStructure({ blocks, courseId }) {
   const [structuredBlocks, setStructuredBlocks] = useState([]);
 
-  // Инициализируем или обновляем состояние блоков и тем, сохраняя существующие expanded
   useEffect(() => {
     setStructuredBlocks((prevBlocks) => {
-      // Если blocks пустой или не изменился, возвращаем текущее состояние
       if (!blocks || blocks.length === 0) return prevBlocks;
-
-      // Обновляем состояние, сохраняя expanded из предыдущего состояния
       return blocks.map((newBlock) => {
         const existingBlock = prevBlocks.find((b) => b.id === newBlock.id);
         return {
           ...newBlock,
-          expanded: existingBlock ? existingBlock.expanded : false,
+          expanded: existingBlock ? existingBlock.expanded : true,
           topics: newBlock.topics.map((newTopic) => {
             const existingTopic = existingBlock?.topics.find((t) => t.id === newTopic.id);
             return {
               ...newTopic,
-              expanded: existingTopic ? existingTopic.expanded : false,
+              expanded: existingTopic ? existingTopic.expanded : true,
             };
           }),
         };
@@ -29,7 +25,6 @@ function CourseStructure({ blocks, courseId }) {
     });
   }, [blocks]);
 
-  // Переключение состояния блока
   const toggleBlock = (blockId) => {
     setStructuredBlocks((prev) =>
       prev.map((block) =>
@@ -38,7 +33,6 @@ function CourseStructure({ blocks, courseId }) {
     );
   };
 
-  // Переключение состояния темы
   const toggleTopic = (blockId, topicId) => {
     setStructuredBlocks((prev) =>
       prev.map((block) => {
@@ -55,9 +49,8 @@ function CourseStructure({ blocks, courseId }) {
     );
   };
 
-  // Обработчик клика по шагу для предотвращения всплытия
   const handleStepClick = (e) => {
-    e.stopPropagation(); // Предотвращаем вызов toggleBlock или toggleTopic
+    e.stopPropagation();
   };
 
   return (
@@ -94,10 +87,10 @@ function CourseStructure({ blocks, courseId }) {
                               to={`/courses/${courseId}/step/${step.id}`}
                               className={({ isActive }) =>
                                 `d-flex align-items-center gap-2 text-white text-decoration-none p-2 rounded ${
-                                  isActive ? "bg-orange" : "hover-bg-dark"
+                                  step.completed ? "bg-success" : isActive ? "bg-orange" : "hover-bg-dark"
                                 }`
                               }
-                              onClick={handleStepClick} // Предотвращаем всплытие
+                              onClick={handleStepClick}
                             >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"

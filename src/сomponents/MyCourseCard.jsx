@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import './CourseCard.css';
 
-export function CourseCard({ course, onDoubleClick }) {
+export function MyCourseCard({ course, onDoubleClick }) {
   const [isFavorite, setIsFavorite] = useState(false);
   const [error, setError] = useState(null);
 

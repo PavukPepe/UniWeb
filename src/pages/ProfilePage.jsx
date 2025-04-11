@@ -210,7 +210,7 @@ function ProfilePage() {
         <div className="row">
           <div className="col-8">
             <div className="d-flex justify-content-between align-items-center m-3 mt-0 ms-1">
-              <h2 className="h5 m-0">Контактная информация</h2>
+              <h2 className="h5 m-0 fs-4 fw-bold">Контактная информация</h2>
               <div className="row w-50 gap-2">
                 {!isEditing ? (
                   <button className="btn btn-outline-light btn-sm me-3" onClick={() => setIsEditing(true)}>
@@ -360,7 +360,7 @@ function ProfilePage() {
         {/* Курсы созданные мной */}
         <div className="mb-0">
           <div className="d-flex justify-content-between align-items-center mb-4">
-            <h2 className="h5 m-3 ms-1">Курсы созданные мной</h2>
+            <h2 className="h5 m-3 ms-1 fs-4 fw-bold">Курсы созданные мной</h2>
           </div>
 
           {isLoading ? (
@@ -419,11 +419,11 @@ function ProfilePage() {
 
         {/* Статистика */}
         <div>
-          <h2 className="h5 m-3">Статистика</h2>
+          <h2 className="h5 m-3 ms-1 fs-4 fw-bold">Статистика</h2>
 
           <div className="row dark-gray p-3">
             <div className="col-md-4 m-0 p-1">
-              <div className="dark-gray p-3 bg-dark m-0 text-light border-secondary">
+              <div className="dark-gray p-3 card-background m-0 text-light border-secondary">
                 <div className="card-header border-secondary">
                   <h3 className="h6 mb-2">Посещаемость за неделю</h3>
                 </div>
@@ -444,7 +444,7 @@ function ProfilePage() {
               </div>
             </div>
             <div className="col-md-4 m-0 p-1">
-              <div className="dark-gray p-3 bg-dark text-light border-secondary">
+              <div className="dark-gray card-background p-3 text-light border-secondary">
                 <div className="card-header border-secondary">
                   <h3 className="h6 mb-2">Активность по месяцам</h3>
                 </div>
@@ -465,7 +465,7 @@ function ProfilePage() {
               </div>
             </div>
             <div className="col-md-4 m-0 p-1">
-              <div className="dark-gray p-3 bg-dark text-light border-secondary">
+              <div className="card-background dark-gray p-3 text-light border-secondary">
                 <div className="card-header border-secondary">
                   <h3 className="h6 mb-2">Прогресс студентов</h3>
                 </div>
@@ -482,7 +482,7 @@ function ProfilePage() {
             </div>
           </div>
 
-          <h3 className="h5 m-3">Статистика по курсам</h3>
+          <h3 className="h5 m-3 ms-1 fs-4 fw-bold">Статистика по курсам</h3>
           <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {/* Здесь можно позже добавить динамическую статистику */}
           </div>

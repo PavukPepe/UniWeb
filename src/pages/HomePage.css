@@ -41,7 +41,7 @@ html, body {
   }
 
 .navigation{
-    height: 100vh;
+    min-height: 100vh;
     background-color: #3d3d3d75;
 }
 

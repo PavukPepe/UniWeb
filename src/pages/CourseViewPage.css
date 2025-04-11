@@ -1,0 +1,48 @@
+ 
+  .sidebar {
+    min-width: 200px; /* Минимальная ширина для col-2 */
+  }
+  
+  .sticky-top {
+    position: sticky;
+    top: 0;
+  }
+  
+  .step-content {
+    min-height: 400px; /* Минимальная высота для контента */
+  }
+  
+  .text-white {
+    color: #ffffff; /* Белый текст для темного фона */
+  }
+  
+  .bg-orange {
+    background-color: #ff3800; /* Активная ссылка, как в MainNav */
+  }
+  
+  .hover-bg-dark:hover {
+    background-color: #343a40; /* Hover-эффект, как в MainNav */
+  }
+  
+  main {
+    max-width: 100%; /* Основной контент занимает оставшееся пространство */
+  }
+  
+  h2.my-4 {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  
+  h5 {
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+  
+  ul.list-unstyled li {
+    margin-bottom: 0.5rem; /* Отступы для списка */
+  }
+  
+  ul.list-unstyled li strong,
+  ul.list-unstyled li span {
+    font-size: 1rem;
+  }

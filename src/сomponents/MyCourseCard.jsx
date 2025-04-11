@@ -1,3 +1,4 @@
+// MyCourseCard.jsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -8,10 +9,8 @@ export function MyCourseCard({ course, onDoubleClick }) {
   const [isFavorite, setIsFavorite] = useState(false);
   const [error, setError] = useState(null);
 
-  // Получаем userId из localStorage
   const userId = localStorage.getItem('userId');
 
-  // Загружаем избранные курсы при монтировании
   useEffect(() => {
     const fetchWishlists = async () => {
       if (!userId) {
@@ -51,7 +50,6 @@ export function MyCourseCard({ course, onDoubleClick }) {
 
     try {
       if (isFavorite) {
-        // Удаляем из избранного
         const response = await fetch(`http://localhost:5252/api/wishlists/${course.courseId}?userId=${userId}`, {
           method: 'DELETE',
           headers: {
@@ -65,7 +63,6 @@ export function MyCourseCard({ course, onDoubleClick }) {
 
         setIsFavorite(false);
       } else {
-        // Добавляем в избранное
         const response = await fetch('http://localhost:5252/api/wishlists', {
           method: 'POST',
           headers: {
@@ -129,9 +126,9 @@ export function MyCourseCard({ course, onDoubleClick }) {
         </div>
 
         <div className="text-secondary mb-3">{course.instructor || "Инструктор не указан"}</div>
-          <Link to={`/payment/${course.courseId}`} className="w-100 btn btn-orange">
-            Продолжить
-          </Link>
+        <Link to={`/courses/${course.courseId}`} className="w-100 btn btn-orange">
+          Продолжить
+        </Link>
       </div>
     </div>
   );

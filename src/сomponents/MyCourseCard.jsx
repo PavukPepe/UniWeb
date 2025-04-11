@@ -103,7 +103,7 @@ export function MyCourseCard({ course, onDoubleClick }) {
         )}
         <div className="row d-flex">
           <p className="card-title col">{course.title || "Без названия"}</p>
-          <p className="card-title col d-flex justify-content-end">{course.price + " ₽" || "Бесплатно"}</p>
+          <p className="card-title col d-flex justify-content-end"></p>
         </div>
         <div className="d-flex align-items-center mb-2">
           {Array(5)
@@ -129,16 +129,9 @@ export function MyCourseCard({ course, onDoubleClick }) {
         </div>
 
         <div className="text-secondary mb-3">{course.instructor || "Инструктор не указан"}</div>
-
-        <div className="d-flex align-items-center gap-2">
-          <Link to={`/payment/${course.courseId}`} className="btn btn-orange">
-            Приобрести
+          <Link to={`/payment/${course.courseId}`} className="w-100 btn btn-orange">
+            Продолжить
           </Link>
-
-          <Link to={`/course/${course.courseId}`} className="text-white text-decoration-none">
-            Программа курса
-          </Link>
-        </div>
       </div>
     </div>
   );

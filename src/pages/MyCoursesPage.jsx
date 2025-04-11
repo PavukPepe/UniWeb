@@ -6,6 +6,7 @@ import { CourseCard } from "../сomponents/CourseCard.jsx";
 import MainNav from "../сomponents/MainNav.jsx";
 import { SearchBar } from "../сomponents/SearchBar.jsx";
 import './HomePage.css';
+import { MyCourseCard } from "../сomponents/MyCourseCard.jsx";
 
 function MyCoursesPage() {
   const [courses, setCourses] = useState([]);
@@ -98,7 +99,7 @@ function MyCoursesPage() {
           <div className="row g-4">
             {courses.map((course) => (
               <div key={course.courseId} className="col-12 col-md-6 col-lg-4">
-                <CourseCard course={course} onClick={() => handleCourseClick(course.courseId)} />
+                <MyCourseCard course={course} onClick={() => handleCourseClick(course.courseId)} />
               </div>
             ))}
           </div>

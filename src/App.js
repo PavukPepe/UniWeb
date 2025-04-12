@@ -12,6 +12,7 @@ import ProfilePage from './pages/ProfilePage';
 import CoursePage from './pages/CoursePage';
 import FavoritesPage from "./pages/FavoritesPage.jsx";
 import CourseViewPage from "./pages/CourseViewPage";
+import AdminDashboard from './pages/admin/AdminDashboard.jsx';
 
 
 function App() {
@@ -32,8 +33,10 @@ function App() {
           <Route path="/coursebuilder/:id" element={<CourseBuilder />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/courses/:courseId" element={<CourseViewPage />} />
           <Route path="/courses/:courseId/step/:stepId" element={<CourseViewPage />} />
+
         </Routes>
       </div>
     </Router>

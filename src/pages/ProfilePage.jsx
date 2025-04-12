@@ -26,6 +26,7 @@ function ProfilePage() {
   const userId = localStorage.getItem("userId");
   const roles = JSON.parse(localStorage.getItem("roles") || "[]");
   const isAuthor = roles.includes("author");
+  const isAdmin = roles.includes("admin"); // Проверяем роль admin
 
   // Загрузка данных пользователя и сертификатов
   useEffect(() => {
@@ -279,7 +280,11 @@ function ProfilePage() {
           </div>
           <div className="col-4 pe-0 d-flex flex-column">
             <div className="d-flex justify-content-between align-items-center m-3 mt-0 ms-3">
-              <h2 className="h5 m-0">Сертификаты</h2>
+              {isAdmin ? (
+                <h2 className="h5 m-0">Администрирование</h2>
+              ) : (
+                <h2 className="h5 m-0">Сертификаты</h2>
+              )}
               <div className="row w-50 gap-2">
                 <Link className="btn btn-outline-light btn-sm me-3" to="/">
                   Выйти <i className="bi bi-box-arrow-right ms-1"></i>
@@ -287,7 +292,11 @@ function ProfilePage() {
               </div>
             </div>
             <div className="p-3 dark-gray flex-1" style={{ flex: 1 }}>
-              {isLoading ? (
+              {isAdmin ? (
+                <Link to="/admin" className="btn btn-outline-light w-100">
+                  Перейти в панель администратора
+                </Link>
+              ) : isLoading ? (
                 <div className="text-white text-center py-5">Загрузка...</div>
               ) : error ? (
                 <div className="text-danger text-center py-5">{error}</div>

@@ -79,7 +79,7 @@ function FavoritesPage() {
         </div>
 
         <div className="mb-4">
-          <h2 className="text-white">Избранные курсы</h2>
+          <h2 className="m-0 fs-4 fw-bold">Избранные курсы</h2>
         </div>
 
         {error ? (

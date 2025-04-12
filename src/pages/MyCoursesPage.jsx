@@ -14,7 +14,6 @@ function MyCoursesPage() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Получаем userId из localStorage
   const userId = localStorage.getItem('userId');
 
   useEffect(() => {
@@ -29,7 +28,6 @@ function MyCoursesPage() {
       }
 
       try {
-        // Получаем список оплаченных курсов (enrollments) с сервера
         const response = await fetch(`http://localhost:5252/api/Payments/?userId=${userId}`, {
           headers: {
             'Content-Type': 'application/json',
@@ -47,18 +45,31 @@ function MyCoursesPage() {
           return;
         }
 
-        // Запрашиваем данные о курсах
-        const coursesResponse = await fetch('http://localhost:5252/api/courses', {
-          headers: { 'Content-Type': 'application/json' },
+        const coursePromises = enrollmentIds.map(async (courseId) => {
+          try {
+            const courseResponse = await fetch(
+              `http://localhost:5252/api/Courses/${courseId}?userId=${userId}`,
+              { headers: { 'Content-Type': 'application/json' } }
+            );
+            if (!courseResponse.ok) {
+              console.error(`Ошибка загрузки курса ${courseId}`);
+              return null;
+            }
+            const data = await courseResponse.json();
+            console.log(`Курс ${courseId}:`, data); // Отладка
+            return data;
+          } catch (err) {
+            console.error(`Ошибка загрузки курса ${courseId}:`, err);
+            return null;
+          }
         });
 
-        if (!coursesResponse.ok) throw new Error('Ошибка при загрузке курсов');
-
-        const allCourses = await coursesResponse.json();
-        const enrolledCourses = allCourses.filter(course => enrollmentIds.includes(course.courseId));
+        const enrolledCourses = (await Promise.all(coursePromises)).filter(Boolean);
+        console.log("Все загруженные курсы:", enrolledCourses); // Отладка
         setCourses(enrolledCourses);
       } catch (err) {
         setError(err.message);
+        console.error('Ошибка:', err);
       } finally {
         setIsLoading(false);
       }
@@ -68,9 +79,9 @@ function MyCoursesPage() {
   }, [userId]);
 
   const handleCourseClick = (courseId) => {
-    navigate(`/course/${courseId}`);
+    console.log("Переход к курсу:", courseId); // Отладка
+    navigate(`/courses/${courseId}`);
   };
-  
 
   return (
     <div className="d-flex min-vh-100 col">
@@ -81,7 +92,7 @@ function MyCoursesPage() {
         </div>
 
         <div className="mb-4">
-          <h2 className="text-white">Мои курсы</h2>
+          <h2 className="text-white m-0 fs-4 fw-bold">Мои курсы</h2>
         </div>
         {error ? (
           <div className="text-danger text-center py-5">{error}</div>
@@ -98,8 +109,8 @@ function MyCoursesPage() {
         ) : (
           <div className="row g-4">
             {courses.map((course) => (
-              <div key={course.courseId} className="col-12 col-md-6 col-lg-4">
-                <MyCourseCard course={course} onClick={() => handleCourseClick(course.courseId)} />
+              <div key={course.id} className="col-12 col-md-6 col-lg-4">
+                <MyCourseCard course={course} onClick={() => handleCourseClick(course.id)} />
               </div>
             ))}
           </div>

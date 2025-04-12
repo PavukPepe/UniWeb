@@ -1,4 +1,3 @@
-// MyCourseCard.jsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -83,6 +82,14 @@ export function MyCourseCard({ course, onDoubleClick }) {
     }
   };
 
+  // Вычисляем прогресс
+  const allSteps = course.blocks
+    ?.flatMap((block) => block.topics)
+    .flatMap((topic) => topic.steps) || [];
+  const completedSteps = allSteps.filter((step) => step.completed).length;
+  const totalSteps = allSteps.length;
+  const progressPercentage = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+
   return (
     <div className="card card-background text-white h-100" style={{ overflow: "hidden" }} onDoubleClick={onDoubleClick}>
       <div className="position-relative" style={{ height: "180px" }}>
@@ -125,8 +132,25 @@ export function MyCourseCard({ course, onDoubleClick }) {
           <span className="text-secondary ms-1 small">/{course.review || 0} отзывов</span>
         </div>
 
+        {/* Прогресс-бар */}
+        <div className="mb-3">
+          <div className="progress" style={{ height: "8px" }}>
+            <div
+              className="progress-bar bg-success"
+              role="progressbar"
+              style={{ width: `${progressPercentage}%` }}
+              aria-valuenow={progressPercentage}
+              aria-valuemin="0"
+              aria-valuemax="100"
+            ></div>
+          </div>
+          <div className="text-secondary small mt-1">
+            Прогресс: {completedSteps}/{totalSteps} шагов ({progressPercentage}%)
+          </div>
+        </div>
+
         <div className="text-secondary mb-3">{course.instructor || "Инструктор не указан"}</div>
-        <Link to={`/courses/${course.courseId}`} className="w-100 btn btn-orange">
+        <Link to={`/courses/${course.id}`} className="w-100 btn btn-orange">
           Продолжить
         </Link>
       </div>

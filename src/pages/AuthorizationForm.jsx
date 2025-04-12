@@ -41,7 +41,13 @@ const AuthorizationForm = () => {
         throw new Error(errorData.message || 'Ошибка при авторизации');
       }
 
-      const { userId, token, email, roles } = await response.json();
+      const { userId, token, email, roles, status } = await response.json();
+
+      // Проверка статуса блокировки
+      if (status) {
+        throw new Error('Пользователь заблокирован');
+      }
+
       console.log('Успешная авторизация:', email);
 
       // Сохранение данных в localStorage

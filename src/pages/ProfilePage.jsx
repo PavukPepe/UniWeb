@@ -393,6 +393,12 @@ function ProfilePage() {
                               <i className="bi bi-star-fill text-warning"></i>
                             </span>
                           </li>
+                          <li className="list-group-item text-light border-secondary d-flex justify-content-between">
+                            <span className="text-secondary">Статус:</span>
+                            <span>
+                              {course.status ? "Cогласован" : "На соглосовани"}
+                            </span>
+                          </li>
                         </ul>
                         <div className="card-footer border-secondary my-2">
                           <div className="d-grid gap-2">

@@ -54,7 +54,8 @@ function HomePage() {
         );
         if (!response.ok) throw new Error(`Ошибка при загрузке курсов: ${response.statusText}`);
         const data = await response.json();
-        setCourses(data);
+        const approvedCourses = data.filter(course => course.isApproved === true);
+        setCourses(approvedCourses);
       } catch (err) {
         setError(err.message);
       } finally {

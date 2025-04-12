@@ -143,7 +143,7 @@ export default function CoursePage() {
                     style={{ cursor: "pointer" }}
                   >
                     <h5 className="mb-0">
-                      Модуль {block.id}: {block.title}
+                      {block.title}
                     </h5>
                     {block.expanded ? <ChevronUp /> : <ChevronDown />}
                   </div>
@@ -159,7 +159,7 @@ export default function CoursePage() {
                               style={{ cursor: "pointer" }}
                             >
                               <h6 className="mb-0">
-                                Тема {topic.id}: {topic.title}
+                                {topic.title}
                               </h6>
                               {topic.expanded ? <ChevronUp /> : <ChevronDown />}
                             </div>
@@ -176,7 +176,7 @@ export default function CoursePage() {
                                       style={{ width: "12px", height: "12px" }}
                                     ></div>
                                     <span className="text-white">
-                                      Шаг {step.id}: {step.title}
+                                      {step.title}
                                     </span>
                                   </li>
                                 ))}

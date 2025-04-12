@@ -69,7 +69,7 @@ function CourseBuilder() {
                   id: step.id, // Сохраняем StepId
                   title: step.title,
                   content: step.content || "",
-                  type: step.contentType || "text", // Сохраняем тип шага
+                  type: step.type || "text", // Сохраняем тип шага
                 })),
               })),
             }))
@@ -369,83 +369,82 @@ function CourseBuilder() {
   };
 
   // Сохранение курса через API
-  // Сохранение курса через API
-const saveCourse = async () => {
-  if (!courseTitle || !courseDescription || !categoryName) {
-    alert("Пожалуйста, заполните все обязательные поля: название, описание и категорию.");
-    return;
-  }
+  const saveCourse = async () => {
+    if (!courseTitle || !courseDescription || !categoryName) {
+      alert("Пожалуйста, заполните все обязательные поля: название, описание и категорию.");
+      return;
+    }
 
-  const courseData = {
-    title: courseTitle,
-    description: courseDescription,
-    userId: localStorage.getItem("userId"),
-    categoryId: parseInt(categoryName, 10),
-    blocks: blocks.map((block, blockIndex) => ({
-      id: typeof block.id === "string" && block.id.startsWith("temp_") ? null : parseInt(block.id), // Проверяем тип и префикс
-      title: block.title,
-      order: blockIndex + 1,
-      topics: block.topics.map((topic, topicIndex) => ({
-        id: typeof topic.id === "string" && topic.id.startsWith("temp_") ? null : parseInt(topic.id), // Аналогично для тем
-        title: topic.title,
-        order: topicIndex + 1,
-        steps: topic.steps.map((step, stepIndex) => ({
-          id: typeof step.id === "string" && step.id.startsWith("temp_") ? null : parseInt(step.id), // Аналогично для шагов
-          title: step.title,
-          content: step.content,
-          type: step.type,
-          order: stepIndex + 1,
+    const courseData = {
+      title: courseTitle,
+      description: courseDescription,
+      userId: localStorage.getItem("userId"),
+      categoryId: parseInt(categoryName, 10),
+      blocks: blocks.map((block, blockIndex) => ({
+        id: typeof block.id === "string" && block.id.startsWith("temp_") ? null : parseInt(block.id),
+        title: block.title,
+        order: blockIndex + 1,
+        topics: block.topics.map((topic, topicIndex) => ({
+          id: typeof topic.id === "string" && topic.id.startsWith("temp_") ? null : parseInt(topic.id),
+          title: topic.title,
+          order: topicIndex + 1,
+          steps: topic.steps.map((step, stepIndex) => ({
+            id: typeof step.id === "string" && step.id.startsWith("temp_") ? null : parseInt(step.id),
+            title: step.title,
+            content: step.content,
+            type: step.type,
+            order: stepIndex + 1,
+          })),
         })),
       })),
-    })),
-  };
+    };
 
-  try {
-    setLoading(true);
-    const method = id ? "PUT" : "POST";
-    const url = id ? `http://localhost:5252/api/courses/${id}` : "http://localhost:5252/api/courses";
+    try {
+      setLoading(true);
+      const method = id ? "PUT" : "POST";
+      const url = id ? `http://localhost:5252/api/courses/${id}` : "http://localhost:5252/api/courses";
 
-    const response = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(courseData),
-    });
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(courseData),
+      });
 
-    if (!response.ok) {
-      const errorMessage = await response.text();
-      throw new Error(errorMessage || "Ошибка при сохранении курса");
-    }
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(errorMessage || "Ошибка при сохранении курса");
+      }
 
-    const result = await response.json();
-    alert(id ? "Курс успешно обновлён!" : "Курс успешно сохранён!");
-    console.log(result);
+      const result = await response.json();
+      alert(id ? "Курс успешно обновлён!" : "Курс успешно сохранён!");
+      console.log(result);
 
-    // Если курс обновлен, обновляем id блоков, тем и шагов из ответа
-    if (id) {
-      setBlocks(
-        result.blocks.map((block, blockIndex) => ({
-          id: block.id.toString(), // Приводим к строке для единообразия
-          title: block.title,
-          topics: block.topics.map((topic, topicIndex) => ({
-            id: topic.id.toString(),
-            title: topic.title,
-            steps: topic.steps.map((step, stepIndex) => ({
-              id: step.id.toString(),
-              title: step.title,
-              content: step.content || "",
-              type: step.contentType || "text",
+      // Если курс обновлен, обновляем id блоков, тем и шагов из ответа
+      if (id) {
+        setBlocks(
+          result.blocks.map((block, blockIndex) => ({
+            id: block.id.toString(),
+            title: block.title,
+            topics: block.topics.map((topic, topicIndex) => ({
+              id: topic.id.toString(),
+              title: topic.title,
+              steps: topic.steps.map((step, stepIndex) => ({
+                id: step.id.toString(),
+                title: step.title,
+                content: step.content || "",
+                type: step.contentType || "text",
+              })),
             })),
-          })),
-        }))
-      );
+          }))
+        );
+      }
+    } catch (error) {
+      console.error("Ошибка при сохранении курса:", error);
+      alert(`Произошла ошибка: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Ошибка при сохранении курса:", error);
-    alert(`Произошла ошибка: ${error.message}`);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <div className="d-flex min-vh-100 bg-dark">
@@ -819,7 +818,7 @@ const saveCourse = async () => {
             </div>
           )}
 
-          {/* Модальное окно для редактирования шага с поддержкой Markdown */}
+          {/* Модальное окно для редактирования шага с поддержкой Markdown и видео */}
           {editingStep && (
             <Modal
               show={true}
@@ -844,56 +843,80 @@ const saveCourse = async () => {
                   <select
                     className="form-control bg-dark text-light border-secondary"
                     value={editingStep.type}
-                    onChange={(e) => setEditingStep({ ...editingStep, type: e.target.value })}
+                    onChange={(e) => setEditingStep({ ...editingStep, type: e.target.value, content: "" })}
                   >
                     <option value="text">Текст</option>
                     <option value="video">Видео</option>
-                    <option value="quiz">Тест</option>
-                    {/* Добавьте другие типы, если нужны */}
                   </select>
                 </div>
-                <div className="row">
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">Содержание (Markdown)</label>
-                    <TextareaAutosize
-                      className="form-control bg-dark text-light border-secondary"
-                      minRows={10}
-                      value={editingStep.content}
-                      onChange={(e) => setEditingStep({ ...editingStep, content: e.target.value })}
-                    />
-                  </div>
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">Предпросмотр</label>
-                    <div
-                      className="border border-secondary rounded p-3 bg-secondary bg-opacity-25"
-                      style={{ minHeight: "200px", overflowY: "auto" }}
-                    >
-                      <ReactMarkdown
-                        components={{
-                          code({ node, inline, className, children, ...props }) {
-                            const match = /language-(\w+)/.exec(className || "");
-                            return !inline && match ? (
-                              <SyntaxHighlighter
-                                style={dark}
-                                language={match[1]}
-                                PreTag="div"
-                                {...props}
-                              >
-                                {String(children).replace(/\n$/, "")}
-                              </SyntaxHighlighter>
-                            ) : (
-                              <code className={className} {...props}>
-                                {children}
-                              </code>
-                            );
-                          },
-                        }}
+                {editingStep.type === "text" ? (
+                  <div className="row">
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Содержание (Markdown)</label>
+                      <TextareaAutosize
+                        className="form-control bg-dark text-light border-secondary"
+                        minRows={10}
+                        value={editingStep.content}
+                        onChange={(e) => setEditingStep({ ...editingStep, content: e.target.value })}
+                      />
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Предпросмотр</label>
+                      <div
+                        className="border border-secondary rounded p-3 bg-secondary bg-opacity-25"
+                        style={{ minHeight: "200px", overflowY: "auto" }}
                       >
-                        {editingStep.content}
-                      </ReactMarkdown>
+                        <ReactMarkdown
+                          components={{
+                            code({ node, inline, className, children, ...props }) {
+                              const match = /language-(\w+)/.exec(className || "");
+                              return !inline && match ? (
+                                <SyntaxHighlighter
+                                  style={dark}
+                                  language={match[1]}
+                                  PreTag="div"
+                                  {...props}
+                                >
+                                  {String(children).replace(/\n$/, "")}
+                                </SyntaxHighlighter>
+                              ) : (
+                                <code className={className} {...props}>
+                                  {children}
+                                </code>
+                              );
+                            },
+                          }}
+                        >
+                          {editingStep.content}
+                        </ReactMarkdown>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="mb-3">
+                    <label className="form-label">Ссылка на видео</label>
+                    <input
+                      type="url"
+                      className="form-control bg-dark text-light border-secondary"
+                      value={editingStep.content}
+                      onChange={(e) => setEditingStep({ ...editingStep, content: e.target.value })}
+                      placeholder="Введите URL видео (например, https://www.youtube.com/...)"
+                    />
+                    {editingStep.content && (
+                      <div className="mt-3">
+                        <label className="form-label">Предпросмотр ссылки</label>
+                        <a
+                          href={editingStep.content}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-light"
+                        >
+                          {editingStep.content}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                )}
               </Modal.Body>
               <Modal.Footer className="bg-dark border-secondary">
                 <button className="btn btn-secondary" onClick={() => setEditingStep(null)}>

@@ -7,6 +7,7 @@ import './CourseCard.css';
 export function MyCourseCard({ course, onDoubleClick }) {
   const [isFavorite, setIsFavorite] = useState(false);
   const [error, setError] = useState(null);
+  const [certificateGenerated, setCertificateGenerated] = useState(false); // Флаг, что сертификат уже создан
 
   const userId = localStorage.getItem('userId');
 
@@ -21,6 +22,7 @@ export function MyCourseCard({ course, onDoubleClick }) {
         const response = await fetch(`http://localhost:5252/api/wishlists?userId=${userId}`, {
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem("token")}` // Добавляем токен
           },
         });
 
@@ -35,7 +37,30 @@ export function MyCourseCard({ course, onDoubleClick }) {
         console.error('Ошибка при загрузке избранных:', err);
       }
     };
+
+    // Проверяем, существует ли сертификат для этого курса
+    const checkCertificate = async () => {
+      if (!userId) return;
+
+      try {
+        const response = await fetch(`http://localhost:5252/api/certificates?userId=${userId}&courseId=${course.courseId}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem("token")}`
+          },
+        });
+
+        if (response.ok) {
+          const certificates = await response.json();
+          setCertificateGenerated(certificates.length > 0); // Если сертификат есть, устанавливаем флаг
+        }
+      } catch (err) {
+        console.error('Ошибка при проверке сертификата:', err);
+      }
+    };
+
     fetchWishlists();
+    checkCertificate();
   }, [course.courseId, userId]);
 
   const toggleFavorite = async (e) => {
@@ -53,6 +78,7 @@ export function MyCourseCard({ course, onDoubleClick }) {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem("token")}`
           },
         });
 
@@ -66,6 +92,7 @@ export function MyCourseCard({ course, onDoubleClick }) {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem("token")}`
           },
           body: JSON.stringify({ userId, courseId: course.courseId }),
         });
@@ -89,6 +116,42 @@ export function MyCourseCard({ course, onDoubleClick }) {
   const completedSteps = allSteps.filter((step) => step.completed).length;
   const totalSteps = allSteps.length;
   const progressPercentage = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+
+  // Обработчик для получения сертификата
+  const handleGetCertificate = async () => {
+    if (!userId) {
+      setError('Необходимо войти в аккаунт');
+      return;
+    }
+
+    try {
+      const certificate = {
+        userId: parseInt(userId),
+        courseId: course.id,
+        issueDate: new Date().toISOString(),
+        certificateCode: `CERT-${course.id}-${userId}-${Date.now()}` // Генерируем уникальный код
+      };
+
+      const response = await fetch('http://localhost:5252/api/certificates', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem("token")}`
+        },
+        body: JSON.stringify(certificate),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Не удалось создать сертификат');
+      }
+
+      setCertificateGenerated(true); // Устанавливаем флаг, что сертификат создан
+    } catch (err) {
+      setError(err.message);
+      console.error('Ошибка при создании сертификата:', err);
+    }
+  };
 
   return (
     <div className="card card-background text-white h-100" style={{ overflow: "hidden" }} onDoubleClick={onDoubleClick}>
@@ -150,9 +213,20 @@ export function MyCourseCard({ course, onDoubleClick }) {
         </div>
 
         <div className="text-secondary mb-3">{course.instructor || "Инструктор не указан"}</div>
-        <Link to={`/courses/${course.id}`} className="w-100 btn btn-orange">
-          Продолжить
-        </Link>
+
+        {/* Кнопка "Продолжить" или "Получить сертификат" */}
+        {progressPercentage === 100 && !certificateGenerated ? (
+          <button 
+            className="w-100 btn btn-success"
+            onClick={handleGetCertificate}
+          >
+            Получить сертификат
+          </button>
+        ) : (
+          <Link to={`/courses/${course.id}`} className="w-100 btn btn-orange">
+            Продолжить
+          </Link>
+        )}
       </div>
     </div>
   );

@@ -26,7 +26,7 @@ function ProfilePage() {
   const userId = localStorage.getItem("userId");
   const roles = JSON.parse(localStorage.getItem("roles") || "[]");
   const isAuthor = roles.includes("author");
-  const isAdmin = roles.includes("admin"); // Проверяем роль admin
+  const isAdmin = roles.includes("admin");
 
   // Загрузка данных пользователя и сертификатов
   useEffect(() => {
@@ -40,7 +40,10 @@ function ProfilePage() {
       setIsLoading(true);
       try {
         const response = await fetch(`http://localhost:5252/api/users/${userId}`, {
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          },
         });
 
         if (!response.ok) {
@@ -72,7 +75,7 @@ function ProfilePage() {
 
   // Загрузка курсов пользователя (только для авторов)
   useEffect(() => {
-    if (!isAuthor) return; // Пропускаем, если не автор
+    if (!isAuthor) return;
 
     const fetchMyCourses = async () => {
       if (!userId) return;
@@ -81,7 +84,10 @@ function ProfilePage() {
         const response = await fetch(
           `http://localhost:5252/api/courses/own?authorId=${userId}`,
           {
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${localStorage.getItem("token")}`,
+            },
           }
         );
 
@@ -128,7 +134,10 @@ function ProfilePage() {
 
       const response = await fetch(`http://localhost:5252/api/users/${userId}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
         body: JSON.stringify(updatedUser),
       });
 
@@ -281,9 +290,9 @@ function ProfilePage() {
           <div className="col-4 pe-0 d-flex flex-column">
             <div className="d-flex justify-content-between align-items-center m-3 mt-0 ms-3">
               {isAdmin ? (
-                <h2 className="h5 m-0">Администрирование</h2>
+                <h2 className="h5 m-0 fs-4 fw-bold">Администрирование</h2>
               ) : (
-                <h2 className="h5 m-0">Сертификаты</h2>
+                <h2 className="h5 m-0 fs-4 fw-bold">Сертификаты</h2>
               )}
               <div className="row w-50 gap-2">
                 <Link className="btn btn-outline-light btn-sm me-3" to="/">
@@ -291,7 +300,7 @@ function ProfilePage() {
                 </Link>
               </div>
             </div>
-            <div className="p-3 dark-gray flex-1" style={{ flex: 1 }}>
+            <div className="p-3 dark-gray flex-1 overflow-y-scroll" style={{ flex: 1 }}>
               {isAdmin ? (
                 <Link to="/admin" className="btn btn-outline-light w-100">
                   Перейти в панель администратора
@@ -305,37 +314,34 @@ function ProfilePage() {
                   Сертификаты отсутствуют
                 </div>
               ) : (
-                <>
-                  <ul className="list-group-flush ps-3">
-                    {certificates.map((certificate) => (
-                      <li
-                        key={certificate.certificateId}
-                        className="list-group-item text-light dark-gray py-2"
-                      >
-                        <div className="row align-items-center">
-                          <i className="bi bi-file-earmark-pdf text-danger me-2 fs-5 col-1"></i>
-                          <div className="col-6">
-                            <div>{certificate.courseTitle || "Название курса"}</div>
-                            <small className="text-secondary">
-                              Выдан:{" "}
-                              {new Date(certificate.issueDate).toLocaleDateString()}
-                            </small>
-                          </div>
-                          <a
-                            href={certificate.certificateUrl || "#"}
-                            className="btn btn-sm btn-link ms-auto col-3"
-                            download
-                          >
-                            <i className="bi bi-download"></i>
-                          </a>
+                <ul className="list-group-flush ps-3">
+                  {certificates.map((certificate) => (
+                    <li
+                      key={certificate.certificateId}
+                      className="list-group-item text-light dark-gray py-2"
+                    >
+                      <div className="row align-items-center">
+                        <i className="bi bi-file-earmark-pdf text-danger me-2 fs-5 col-1"></i>
+                        <div className="col-8">
+                          <div>{certificate.courseTitle || "Название курса"}</div>
+                          <small className="text-secondary">
+                            Выдан: {new Date(certificate.issueDate).toLocaleDateString()}
+                          </small>
+                          <small className="text-secondary d-block">
+                            Код: {certificate.certificateCode}
+                          </small>
                         </div>
-                      </li>
-                    ))}
-                  </ul>
-                  <button className="btn w-100">
-                    <i className="bi bi-plus me-1"></i> Загрузить сертификат
-                  </button>
-                </>
+                        <a
+                          href={`http://localhost:5252/api/certificates/${certificate.certificateId}/pdf`}
+                          className="btn btn-sm btn-link col-2"
+                          download={`certificate_${certificate.certificateId}.pdf`}
+                        >
+                          <i className="bi bi-download"></i>
+                        </a>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
               )}
             </div>
           </div>
@@ -396,7 +402,7 @@ function ProfilePage() {
                           <li className="list-group-item text-light border-secondary d-flex justify-content-between">
                             <span className="text-secondary">Статус:</span>
                             <span>
-                              {course.status ? "Cогласован" : "На соглосовани"}
+                              {course.isApproved ? "Согласован" : "На согласовании"}
                             </span>
                           </li>
                         </ul>

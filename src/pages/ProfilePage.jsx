@@ -11,6 +11,8 @@ function ProfilePage() {
   const [userData, setUserData] = useState(null);
   const [myCourses, setMyCourses] = useState([]);
   const [certificates, setCertificates] = useState([]);
+  const [salesData, setSalesData] = useState([]); // Статистика продаж
+  const [progressData, setProgressData] = useState({}); // Прогресс по курсам
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -54,7 +56,6 @@ function ProfilePage() {
         setUserData(data);
         setCertificates(data.certificates || []);
 
-        // Инициализируем formData с данными пользователя
         const { lastName, firstName, middleName } = splitFullName(data.fullName);
         setFormData({
           lastName,
@@ -73,15 +74,14 @@ function ProfilePage() {
     fetchUserData();
   }, [userId]);
 
-  // Загрузка курсов пользователя (только для авторов)
+  // Загрузка курсов и статистики (для авторов)
   useEffect(() => {
-    if (!isAuthor) return;
+    if (!isAuthor || !userId) return;
 
-    const fetchMyCourses = async () => {
-      if (!userId) return;
-
+    const fetchMyCoursesAndStats = async () => {
       try {
-        const response = await fetch(
+        // Загружаем курсы
+        const coursesResponse = await fetch(
           `http://localhost:5252/api/courses/own?authorId=${userId}`,
           {
             headers: {
@@ -91,18 +91,53 @@ function ProfilePage() {
           }
         );
 
-        if (!response.ok) {
-          throw new Error(`Ошибка: ${response.status} - ${response.statusText}`);
+        if (!coursesResponse.ok) {
+          throw new Error(`Ошибка курсов: ${coursesResponse.status} - ${coursesResponse.statusText}`);
         }
 
-        const data = await response.json();
-        setMyCourses(data);
+        const coursesData = await coursesResponse.json();
+        setMyCourses(coursesData);
+
+        // Загружаем статистику продаж
+        const salesResponse = await fetch(
+          `http://localhost:5252/api/courses/sales?authorId=${userId}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        if (!salesResponse.ok) {
+          throw new Error(`Ошибка продаж: ${salesResponse.status} - ${salesResponse.statusText}`);
+        }
+
+        const salesData = await salesResponse.json();
+        setSalesData(salesData);
+
+        // Загружаем прогресс для каждого курса
+        const progressPromises = coursesData.map((course) =>
+          fetch(`http://localhost:5252/api/courses/${course.id}/progress`, {
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${localStorage.getItem("token")}`,
+            },
+          }).then((res) => res.json())
+        );
+
+        const progressResults = await Promise.all(progressPromises);
+        const progressDataMap = {};
+        coursesData.forEach((course, index) => {
+          progressDataMap[course.id] = progressResults[index];
+        });
+        setProgressData(progressDataMap);
       } catch (err) {
         setError(err.message);
       }
     };
 
-    fetchMyCourses();
+    fetchMyCoursesAndStats();
   }, [userId, isAuthor]);
 
   // Разделяем FullName на фамилию, имя и отчество
@@ -347,13 +382,44 @@ function ProfilePage() {
           </div>
         </div>
 
-        {/* Курсы созданные мной (только для авторов) */}
+        {/* Статистика продаж */}
+        {isAuthor && (
+          <div className="row">
+            <div className="d-flex justify-content-between align-items-center m-3 mt-0 ms-1">
+              <h2 className="h5 m-0 mt-3 fs-4 fw-bold">Статистика продаж за неделю</h2>
+            </div>
+            <div className="dark-gray p-3">
+              {isLoading ? (
+                <div className="text-white text-center py-5">Загрузка...</div>
+              ) : error ? (
+                <div className="text-danger text-center py-5">{error}</div>
+              ) : salesData.length === 0 ? (
+                <div className="text-white text-center my-3">Нет продаж за неделю</div>
+              ) : (
+                <div className="row">
+                  {salesData.map((sale) => (
+                    <div key={sale.courseId} className="col-md-4 m-0 p-1">
+                      <div className="p-3 card-background text-light border-secondary">
+                        <div className="card-body">
+                          <h6 className="card-title">{sale.courseTitle}</h6>
+                          <p className="card-text">Продано: {sale.salesCount}</p>
+                            <p className="card-text">Выручка: {sale.totalRevenue} ₽</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Курсы созданные мной */}
         {isAuthor && (
           <div className="mb-0">
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h2 className="h5 m-3 ms-1 fs-4 fw-bold">Курсы созданные мной</h2>
             </div>
-
             {isLoading ? (
               <div className="text-white text-center py-5">Загрузка курсов...</div>
             ) : error ? (
@@ -366,7 +432,7 @@ function ProfilePage() {
                   </Link>
                 </div>
                 {myCourses.length === 0 ? (
-                  <div className="ms-5 col text-white d-flex align-items-center m-0">
+                  <div className="col text-white d-flex align-items-center m-0 justify-content-center">
                     Вы ещё не создали курсы
                   </div>
                 ) : (
@@ -374,18 +440,14 @@ function ProfilePage() {
                     <div key={course.id} className="col m-0 p-1">
                       <div className="card card-background text-light border-secondary h-100">
                         <img
-                          src={
-                            course.image || "/placeholder.svg?height=150&width=250"
-                          }
+                          src={course.image || "/placeholder.svg?height=150&width=250"}
                           className="card-img-top object-fit-cover"
                           alt={course.title}
                           style={{ maxHeight: "200px" }}
                         />
                         <div className="card-body">
                           <h5 className="card-title">{course.title}</h5>
-                          <p className="card-text small description">
-                            {course.description}
-                          </p>
+                          <p className="card-text small description">{course.description}</p>
                         </div>
                         <ul className="list-group list-group-flush">
                           <li className="list-group-item text-light border-secondary d-flex justify-content-between">
@@ -401,9 +463,26 @@ function ProfilePage() {
                           </li>
                           <li className="list-group-item text-light border-secondary d-flex justify-content-between">
                             <span className="text-secondary">Статус:</span>
-                            <span>
-                              {course.isApproved ? "Согласован" : "На согласовании"}
-                            </span>
+                            <span>{course.status ? "Согласован" : "На согласовании"}</span>
+                          </li>
+                          <li className="list-group-item text-light border-secondary">
+                            <span className="text-secondary">Средний прогресс:</span>
+                            <div className="progress mt-1">
+                              <div
+                                className="progress-bar bg-success"
+                                role="progressbar"
+                                style={{ width: `${progressData[course.id]?.averageProgress || 0}%` }}
+                                aria-valuenow={progressData[course.id]?.averageProgress || 0}
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                              >
+                                {progressData[course.id]?.averageProgress || 0}%
+                              </div>
+                            </div>
+                          </li>
+                          <li className="list-group-item text-light border-secondary d-flex justify-content-between">
+                            <span className="text-secondary">Завершено студентами:</span>
+                            <span>{progressData[course.id]?.completedCount || 0}</span>
                           </li>
                         </ul>
                         <div className="card-footer border-secondary my-2">

@@ -24,6 +24,7 @@ function CourseBuilder() {
   const [editingStep, setEditingStep] = useState(null);
   const [expandedTopics, setExpandedTopics] = useState({});
   const [loading, setLoading] = useState(false);
+  const [courseImageUrl, setCourseImageUrl] = useState("");
 
   // Генерация уникальных ID для новых элементов (временные, для фронтенда)
   const generateId = () => `temp_${Math.random().toString(36).substr(2, 9)}`;
@@ -48,43 +49,43 @@ function CourseBuilder() {
   // Загрузка курса, если есть id
   useEffect(() => {
     if (id) {
-      const fetchCourse = async () => {
-        try {
-          setLoading(true);
-          const response = await fetch(`http://localhost:5252/api/courses/${id}`);
-          if (!response.ok) throw new Error("Ошибка загрузки курса");
-          const data = await response.json();
+        const fetchCourse = async () => {
+            try {
+                setLoading(true);
+                const response = await fetch(`http://localhost:5252/api/courses/${id}`);
+                if (!response.ok) throw new Error("Ошибка загрузки курса");
+                const data = await response.json();
 
-          setCourseTitle(data.title);
-          setCourseDescription(data.description);
-          setCourseCategory(data.categoryId || "");
-          setBlocks(
-            data.blocks.map((block, blockIndex) => ({
-              id: block.id, // Сохраняем BlockId
-              title: block.title,
-              topics: block.topics.map((topic, topicIndex) => ({
-                id: topic.id, // Сохраняем TopicId
-                title: topic.title,
-                steps: topic.steps.map((step, stepIndex) => ({
-                  id: step.id, // Сохраняем StepId
-                  title: step.title,
-                  content: step.content || "",
-                  type: step.type || "text", // Сохраняем тип шага
-                })),
-              })),
-            }))
-          );
-        } catch (error) {
-          console.error("Ошибка при загрузке курса:", error);
-          alert("Не удалось загрузить курс");
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchCourse();
+                setCourseTitle(data.title);
+                setCourseDescription(data.description);
+                setCourseCategory(data.categoryId || "");
+                setCourseImageUrl(data.imageUrl || ""); // Устанавливаем URL изображения
+                setBlocks(
+                    data.blocks.map((block, blockIndex) => ({
+                        id: block.id,
+                        title: block.title,
+                        topics: block.topics.map((topic, topicIndex) => ({
+                            id: topic.id,
+                            title: topic.title,
+                            steps: topic.steps.map((step, stepIndex) => ({
+                                id: step.id,
+                                title: step.title,
+                                content: step.content || "",
+                                type: step.type || "text",
+                            })),
+                        })),
+                    }))
+                );
+            } catch (error) {
+                console.error("Ошибка при загрузке курса:", error);
+                alert("Не удалось загрузить курс");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchCourse();
     }
-  }, [id]);
-
+}, [id]);
   // Добавление нового блока
   const addBlock = () => {
     const newBlock = {
@@ -368,82 +369,83 @@ function CourseBuilder() {
     }
   };
 
-  // Сохранение курса через API
-  const saveCourse = async () => {
-    if (!courseTitle || !courseDescription || !categoryName) {
-      alert("Пожалуйста, заполните все обязательные поля: название, описание и категорию.");
-      return;
-    }
-
-    const courseData = {
-      title: courseTitle,
-      description: courseDescription,
-      userId: localStorage.getItem("userId"),
-      categoryId: parseInt(categoryName, 10),
-      blocks: blocks.map((block, blockIndex) => ({
-        id: typeof block.id === "string" && block.id.startsWith("temp_") ? null : parseInt(block.id),
-        title: block.title,
-        order: blockIndex + 1,
-        topics: block.topics.map((topic, topicIndex) => ({
-          id: typeof topic.id === "string" && topic.id.startsWith("temp_") ? null : parseInt(topic.id),
-          title: topic.title,
-          order: topicIndex + 1,
-          steps: topic.steps.map((step, stepIndex) => ({
-            id: typeof step.id === "string" && step.id.startsWith("temp_") ? null : parseInt(step.id),
-            title: step.title,
-            content: step.content,
-            type: step.type,
-            order: stepIndex + 1,
-          })),
-        })),
-      })),
-    };
-
-    try {
-      setLoading(true);
-      const method = id ? "PUT" : "POST";
-      const url = id ? `http://localhost:5252/api/courses/${id}` : "http://localhost:5252/api/courses";
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(courseData),
-      });
-
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        throw new Error(errorMessage || "Ошибка при сохранении курса");
+    const saveCourse = async () => {
+      if (!courseTitle || !courseDescription || !categoryName) {
+          alert("Пожалуйста, заполните все обязательные поля: название, описание и категорию.");
+          return;
       }
-
-      const result = await response.json();
-      alert(id ? "Курс успешно обновлён!" : "Курс успешно сохранён!");
-      console.log(result);
-
-      // Если курс обновлен, обновляем id блоков, тем и шагов из ответа
-      if (id) {
-        setBlocks(
-          result.blocks.map((block, blockIndex) => ({
-            id: block.id.toString(),
-            title: block.title,
-            topics: block.topics.map((topic, topicIndex) => ({
-              id: topic.id.toString(),
-              title: topic.title,
-              steps: topic.steps.map((step, stepIndex) => ({
-                id: step.id.toString(),
-                title: step.title,
-                content: step.content || "",
-                type: step.contentType || "text",
+  
+      const courseData = {
+          title: courseTitle,
+          description: courseDescription,
+          userId: localStorage.getItem("userId"),
+          categoryId: parseInt(categoryName, 10),
+          imageUrl: courseImageUrl, // Добавляем URL изображения
+          blocks: blocks.map((block, blockIndex) => ({
+              id: typeof block.id === "string" && block.id.startsWith("temp_") ? null : parseInt(block.id),
+              title: block.title,
+              order: blockIndex + 1,
+              topics: block.topics.map((topic, topicIndex) => ({
+                  id: typeof topic.id === "string" && topic.id.startsWith("temp_") ? null : parseInt(topic.id),
+                  title: topic.title,
+                  order: topicIndex + 1,
+                  steps: topic.steps.map((step, stepIndex) => ({
+                      id: typeof step.id === "string" && step.id.startsWith("temp_") ? null : parseInt(step.id),
+                      title: step.title,
+                      content: step.content,
+                      type: step.type,
+                      order: stepIndex + 1,
+                  })),
               })),
-            })),
-          }))
-        );
+          })),
+      };
+  
+      try {
+          setLoading(true);
+          const method = id ? "PUT" : "POST";
+          const url = id ? `http://localhost:5252/api/courses/${id}` : "http://localhost:5252/api/courses";
+  
+          const response = await fetch(url, {
+              method,
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(courseData),
+          });
+  
+          if (!response.ok) {
+              const errorMessage = await response.text();
+              throw new Error(errorMessage || "Ошибка при сохранении курса");
+          }
+  
+          const result = await response.json();
+          alert(id ? "Курс успешно обновлён!" : "Курс успешно сохранён!");
+          console.log(result);
+  
+          // Если курс обновлен, обновляем id блоков, тем и шагов из ответа
+          if (id) {
+              setBlocks(
+                  result.blocks.map((block, blockIndex) => ({
+                      id: block.id.toString(),
+                      title: block.title,
+                      topics: block.topics.map((topic, topicIndex) => ({
+                          id: topic.id.toString(),
+                          title: topic.title,
+                          steps: topic.steps.map((step, stepIndex) => ({
+                              id: step.id.toString(),
+                              title: step.title,
+                              content: step.content || "",
+                              type: step.contentType || "text",
+                          })),
+                      })),
+                  }))
+              );
+              setCourseImageUrl(result.imageUrl || ""); // Обновляем URL изображения
+          }
+      } catch (error) {
+          console.error("Ошибка при сохранении курса:", error);
+          alert(`Произошла ошибка: ${error.message}`);
+      } finally {
+          setLoading(false);
       }
-    } catch (error) {
-      console.error("Ошибка при сохранении курса:", error);
-      alert(`Произошла ошибка: ${error.message}`);
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
@@ -482,8 +484,11 @@ function CourseBuilder() {
             </div>
             <div className="mb-3 col-4">
               <input
-                type="file"
+                type="url"
+                placeholder="Введите ссылку на фото курса..."
                 className="form-control bg-dark text-light border-secondary"
+                value={courseImageUrl}
+                onChange={(e) => setCourseImageUrl(e.target.value)}
               />
             </div>
           </div>

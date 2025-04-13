@@ -193,7 +193,11 @@ export default function CoursePage() {
           </div>
         </div>
         <div className="col-4">
-          <img src={course.logo} className="dark-gray" alt="" style={{ height: 400, width: 400 }} />
+          <img src={course.logo} className="dark-gray mb-3" alt="" style={{ height: 400, width: 400 }} />
+          <div className="dark-gray p-3" style={{ width: 400 }}>
+              <h2 className="h5 m-0 fs-4 fw-bold" style={{ width: 400 }}>Автор курса</h2>
+              <p>{course.instructor || "Без автора"}</p>
+          </div>
         </div>
           <div className="m-0 p-0">
             <h5 className="text-white mb-3">Отзывы</h5>

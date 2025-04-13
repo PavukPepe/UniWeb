@@ -89,7 +89,8 @@ export function CourseCard({ course, onDoubleClick }) {
   return (
     <div className="card card-background text-white h-100" style={{ overflow: "hidden" }} onDoubleClick={onDoubleClick}>
       <div className="position-relative" style={{ height: "180px" }}>
-        <img src='course.png' alt={course.title || "Без названия"} className="w-100 h-100 object-fit-cover" />
+        <img src={course.image || "/course.png"}
+              alt={course.title || "Без названия"} className="w-100 h-100 object-fit-cover" />
         <i
           onClick={toggleFavorite}
           className={`bi ${isFavorite ? 'bi-heart-fill' : 'bi-heart'} position-absolute top-0 end-0 m-2 p-1 favorite-btn`}

@@ -6,6 +6,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./ProfilePage.css";
 import MainNav from "../сomponents/MainNav.jsx";
+import { jsPDF } from "jspdf"; // Импорт jsPDF
+import { font } from "../assets/Inter-normal.js"
+import "jspdf-autotable";
 
 function ProfilePage() {
   const [userData, setUserData] = useState(null);
@@ -22,6 +25,7 @@ function ProfilePage() {
     middleName: "",
     email: "",
     phone: "",
+    profilePicture: "",
   });
 
   // Получаем userId и роли из localStorage
@@ -29,6 +33,13 @@ function ProfilePage() {
   const roles = JSON.parse(localStorage.getItem("roles") || "[]");
   const isAuthor = roles.includes("author");
   const isAdmin = roles.includes("admin");
+
+  var callAddFont = function () {
+  this.addFileToVFS('Inter-normal.ttf', font);
+  this.addFont('Inter-normal.ttf', 'Inter', 'normal');
+  };
+  jsPDF.API.events.push(['addFonts', callAddFont])
+
 
   // Загрузка данных пользователя и сертификатов
   useEffect(() => {
@@ -56,6 +67,7 @@ function ProfilePage() {
         setUserData(data);
         setCertificates(data.certificates || []);
 
+        // Инициализируем formData с данными пользователя
         const { lastName, firstName, middleName } = splitFullName(data.fullName);
         setFormData({
           lastName,
@@ -63,6 +75,7 @@ function ProfilePage() {
           middleName,
           email: data.email || "",
           phone: data.phone || "Не указан",
+          profilePicture: data.profilePicture || "",
         });
       } catch (err) {
         setError(err.message);
@@ -165,6 +178,7 @@ function ProfilePage() {
         fullName: `${formData.lastName} ${formData.firstName} ${formData.middleName}`.trim(),
         email: formData.email,
         phone: formData.phone === "Не указан" ? null : formData.phone,
+        profilePicture: formData.profilePicture || null,
       };
 
       const response = await fetch(`http://localhost:5252/api/users/${userId}`, {
@@ -196,8 +210,53 @@ function ProfilePage() {
       middleName,
       email: userData.email || "",
       phone: userData.phone || "Не указан",
+      profilePicture: userData.profilePicture || "",
     });
     setIsEditing(false);
+  };
+
+  // Обработчик экспорта статистики в PDF
+  const handleExportToPDF = () => {
+    try {
+      const doc = new jsPDF();
+
+      // Установка шрифта Inter
+      doc.setFont("Inter", "normal");
+
+      // Заголовок
+      doc.setFontSize(16);
+      doc.text("Статистика продаж за неделю", 20, 20);
+
+      let yOffset = 40;
+      salesData.forEach((sale, index) => {
+        doc.setFontSize(12);
+        doc.text(`Курс: ${sale.courseTitle}`, 20, yOffset);
+        doc.text(`Продано: ${sale.salesCount} шт.`, 20, yOffset + 10);
+        doc.text(`Выручка: ${sale.totalRevenue} ₽`, 20, yOffset + 20);
+        if (sale.sales && sale.sales.length > 0) {
+          doc.text("Детали продаж:", 20, yOffset + 30);
+          sale.sales.forEach((s, i) => {
+            const date = new Date(s.date).toLocaleDateString("ru-RU");
+            doc.text(`- ${date}: ${s.amount} ₽`, 30, yOffset + 40 + i * 10);
+          });
+          yOffset += 40 + sale.sales.length * 10 + 20;
+        } else {
+          yOffset += 50;
+        }
+      });
+
+      // Итоговые показатели
+      const totalSales = salesData.reduce((sum, sale) => sum + sale.salesCount, 0);
+      const totalRevenue = salesData.reduce((sum, sale) => sum + sale.totalRevenue, 0);
+      doc.setFontSize(14);
+      doc.text(`Итого продано: ${totalSales} шт.`, 20, yOffset);
+      doc.text(`Итого выручка: ${totalRevenue} ₽`, 20, yOffset + 10);
+
+      // Сохранение PDF
+      doc.save(`sales_statistics_${new Date().toISOString().split("T")[0]}.pdf`);
+    } catch (err) {
+      setError("Ошибка при экспорте в PDF: " + err.message);
+    }
   };
 
   return (
@@ -387,6 +446,13 @@ function ProfilePage() {
           <div className="row">
             <div className="d-flex justify-content-between align-items-center m-3 mt-0 ms-1">
               <h2 className="h5 m-0 mt-3 fs-4 fw-bold">Статистика продаж за неделю</h2>
+              <button
+                className="btn btn-outline-light btn-sm"
+                onClick={handleExportToPDF}
+                disabled={isLoading || salesData.length === 0}
+              >
+                <i className="bi bi-file-earmark-pdf me-1"></i> Экспорт в PDF
+              </button>
             </div>
             <div className="dark-gray p-3">
               {isLoading ? (
@@ -394,7 +460,7 @@ function ProfilePage() {
               ) : error ? (
                 <div className="text-danger text-center py-5">{error}</div>
               ) : salesData.length === 0 ? (
-                <div className="text-white text-center my-3">Нет продаж за неделю</div>
+                <div className="text-white text-center py-5">Нет продаж за неделю</div>
               ) : (
                 <div className="row">
                   {salesData.map((sale) => (
@@ -403,7 +469,7 @@ function ProfilePage() {
                         <div className="card-body">
                           <h6 className="card-title">{sale.courseTitle}</h6>
                           <p className="card-text">Продано: {sale.salesCount}</p>
-                            <p className="card-text">Выручка: {sale.totalRevenue} ₽</p>
+                          <p className="card-text">Выручка: {sale.totalRevenue} ₽</p>
                         </div>
                       </div>
                     </div>
@@ -418,7 +484,7 @@ function ProfilePage() {
         {isAuthor && (
           <div className="mb-0">
             <div className="d-flex justify-content-between align-items-center mb-4">
-              <h2 className="h5 m-3 ms-1 fs-4 fw-bold">Курсы созданные мной</h2>
+              <h2 className="h5 m-3 ms-1 fs-4 fw-bold piacevole">Курсы созданные мной</h2>
             </div>
             {isLoading ? (
               <div className="text-white text-center py-5">Загрузка курсов...</div>

@@ -20,7 +20,7 @@ export function CourseCard({ course, onDoubleClick }) {
       }
 
       try {
-        const response = await fetch(`http://localhost:5252/api/wishlists?userId=${userId}`, {
+        const response = await fetch(`http://193.37.71.67:8000/api/wishlists?userId=${userId}`, {
           headers: {
             'Content-Type': 'application/json',
           },
@@ -52,7 +52,7 @@ export function CourseCard({ course, onDoubleClick }) {
     try {
       if (isFavorite) {
         // Удаляем из избранного
-        const response = await fetch(`http://localhost:5252/api/wishlists/${course.courseId}?userId=${userId}`, {
+        const response = await fetch(`http://193.37.71.67:8000/api/wishlists/${course.courseId}?userId=${userId}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -66,7 +66,7 @@ export function CourseCard({ course, onDoubleClick }) {
         setIsFavorite(false);
       } else {
         // Добавляем в избранное
-        const response = await fetch('http://localhost:5252/api/wishlists', {
+        const response = await fetch('http://193.37.71.67:8000/api/wishlists', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

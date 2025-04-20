@@ -17,7 +17,7 @@ function CourseViewPage() {
             const userId = localStorage.getItem("userId"); // Получаем userId из LocalStorage
             try {
                 const response = await fetch(
-                    `http://localhost:5252/api/Courses/${courseId}${userId ? `?userId=${userId}` : ""}`,
+                    `http://193.37.71.67:8000/api/Courses/${courseId}${userId ? `?userId=${userId}` : ""}`,
                     {
                         headers: { "Content-Type": "application/json" },
                     }

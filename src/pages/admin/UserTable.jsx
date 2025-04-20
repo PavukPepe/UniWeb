@@ -13,7 +13,7 @@ function UsersTable() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch('http://localhost:5252/api/users', {
+      const response = await fetch('http://193.37.71.67:8000/api/users', {
         headers: { 'Content-Type': 'application/json' },
       });
 
@@ -30,7 +30,7 @@ function UsersTable() {
   const handleToggleBlock = async (user) => {
     const updatedUser = { ...user, isBlocked: !user.isBlocked };
     try {
-      const response = await fetch(`http://localhost:5252/api/users/${user.userId}`, {
+      const response = await fetch(`http://193.37.71.67:8000/api/users/${user.userId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedUser),

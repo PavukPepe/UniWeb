@@ -25,7 +25,7 @@ const AuthorizationForm = () => {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:5252/api/Users/login', {
+      const response = await fetch('http://193.37.71.67:8000/api/Users/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

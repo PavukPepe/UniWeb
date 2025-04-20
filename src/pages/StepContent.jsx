@@ -34,7 +34,7 @@ function StepContent({ blocks }) {
     }
 
     try {
-      const response = await fetch("http://localhost:5252/api/Userprogresses", {
+      const response = await fetch("http://193.37.71.67:8000/api/Userprogresses", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

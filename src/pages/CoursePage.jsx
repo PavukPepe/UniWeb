@@ -21,7 +21,7 @@ export default function CoursePage() {
       setIsLoading(true);
       setError(null);
       try {
-        const courseResponse = await fetch(`http://localhost:5252/api/courses/${courseId}`, {
+        const courseResponse = await fetch(`http://193.37.71.67:8000/api/courses/${courseId}`, {
           headers: { 'Content-Type': 'application/json' },
         });
         if (!courseResponse.ok) {
@@ -44,7 +44,7 @@ export default function CoursePage() {
         });
 
         // Отдельный запрос для отзывов
-        const reviewsResponse = await fetch(`http://localhost:5252/api/reviews/course/${courseId}`, {
+        const reviewsResponse = await fetch(`http://193.37.71.67:8000/api/reviews/course/${courseId}`, {
           headers: { 'Content-Type': 'application/json' },
         });
         if (!reviewsResponse.ok) {
@@ -93,7 +93,7 @@ export default function CoursePage() {
     if (!newReview.text.trim()) return;
 
     try {
-      const response = await fetch(`http://localhost:5252/api/reviews/course/${courseId}`, {
+      const response = await fetch(`http://193.37.71.67:8000/api/reviews/course/${courseId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

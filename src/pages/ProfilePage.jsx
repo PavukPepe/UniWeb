@@ -52,7 +52,7 @@ function ProfilePage() {
 
       setIsLoading(true);
       try {
-        const response = await fetch(`http://localhost:5252/api/users/${userId}`, {
+        const response = await fetch(`http://193.37.71.67:8000/api/users/${userId}`, {
           headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${localStorage.getItem("token")}`,
@@ -95,7 +95,7 @@ function ProfilePage() {
       try {
         // Загружаем курсы
         const coursesResponse = await fetch(
-          `http://localhost:5252/api/courses/own?authorId=${userId}`,
+          `http://193.37.71.67:8000/api/courses/own?authorId=${userId}`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -113,7 +113,7 @@ function ProfilePage() {
 
         // Загружаем статистику продаж
         const salesResponse = await fetch(
-          `http://localhost:5252/api/courses/sales?authorId=${userId}`,
+          `http://193.37.71.67:8000/api/courses/sales?authorId=${userId}`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -131,7 +131,7 @@ function ProfilePage() {
 
         // Загружаем прогресс для каждого курса
         const progressPromises = coursesData.map((course) =>
-          fetch(`http://localhost:5252/api/courses/${course.id}/progress`, {
+          fetch(`http://193.37.71.67:8000/api/courses/${course.id}/progress`, {
             headers: {
               "Content-Type": "application/json",
               "Authorization": `Bearer ${localStorage.getItem("token")}`,
@@ -181,7 +181,7 @@ function ProfilePage() {
         profilePicture: formData.profilePicture || null,
       };
 
-      const response = await fetch(`http://localhost:5252/api/users/${userId}`, {
+      const response = await fetch(`http://193.37.71.67:8000/api/users/${userId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -426,7 +426,7 @@ function ProfilePage() {
                           </small>
                         </div>
                         <a
-                          href={`http://localhost:5252/api/certificates/${certificate.certificateId}/pdf`}
+                          href={`http://193.37.71.67:8000/api/certificates/${certificate.certificateId}/pdf`}
                           className="btn btn-sm btn-link col-2"
                           download={`certificate_${certificate.certificateId}.pdf`}
                         >

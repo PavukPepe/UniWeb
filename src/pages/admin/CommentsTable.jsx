@@ -13,7 +13,7 @@ function CommentsTable() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch('http://localhost:5252/api/Reviews', { // Или /api/users/comments, если в UsersController
+      const response = await fetch('http://193.37.71.67:8000/api/Reviews', { // Или /api/users/comments, если в UsersController
         headers: { 'Content-Type': 'application/json' },
       });
 
@@ -30,7 +30,7 @@ function CommentsTable() {
   const handleDelete = async (reviewId) => {
     if (window.confirm("Вы уверены, что хотите удалить этот комментарий?")) {
       try {
-        const response = await fetch(`http://localhost:5252/api/Reviews/${reviewId}`, {
+        const response = await fetch(`http://193.37.71.67:8000/api/Reviews/${reviewId}`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
         });

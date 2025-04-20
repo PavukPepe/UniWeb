@@ -34,7 +34,7 @@ function CourseBuilder() {
     const fetchCategories = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:5252/api/categories");
+        const response = await fetch("http://193.37.71.67:8000/api/categories");
         const data = await response.json();
         setCategories(data);
       } catch (error) {
@@ -52,7 +52,7 @@ function CourseBuilder() {
         const fetchCourse = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`http://localhost:5252/api/courses/${id}`);
+                const response = await fetch(`http://193.37.71.67:8000/api/courses/${id}`);
                 if (!response.ok) throw new Error("Ошибка загрузки курса");
                 const data = await response.json();
 
@@ -403,7 +403,7 @@ function CourseBuilder() {
       try {
           setLoading(true);
           const method = id ? "PUT" : "POST";
-          const url = id ? `http://localhost:5252/api/courses/${id}` : "http://localhost:5252/api/courses";
+          const url = id ? `http://193.37.71.67:8000/api/courses/${id}` : "http://193.37.71.67:8000/api/courses";
   
           const response = await fetch(url, {
               method,

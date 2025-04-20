@@ -13,7 +13,7 @@ function CoursesTable() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch('http://localhost:5252/api/courses', {
+      const response = await fetch('http://193.37.71.67:8000/api/courses', {
         headers: { 'Content-Type': 'application/json' },
       });
 
@@ -30,7 +30,7 @@ function CoursesTable() {
   const handleToggleApproval = async (course) => {
     const updatedCourse = { ...course, IsApproved: !course.IsApproved };
     try {
-      const response = await fetch(`http://localhost:5252/api/courses/approved/${course.courseId}`, {
+      const response = await fetch(`http://193.37.71.67:8000/api/courses/approved/${course.courseId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedCourse),

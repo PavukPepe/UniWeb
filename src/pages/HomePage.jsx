@@ -19,7 +19,7 @@ function HomePage() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('http://localhost:5252/api/categories', {
+        const response = await fetch('http://193.37.71.67:8000/api/categories', {
           headers: { 'Content-Type': 'application/json' },
         });
         if (!response.ok) throw new Error('Ошибка при загрузке категорий');
@@ -47,7 +47,7 @@ function HomePage() {
       setError(null);
       try {
         const response = await fetch(
-          `http://localhost:5252/api/courses?categoryId=${activeCategory.categoryId}`,
+          `http://193.37.71.67:8000/api/courses?categoryId=${activeCategory.categoryId}`,
           {
             headers: { 'Content-Type': 'application/json' },
           }

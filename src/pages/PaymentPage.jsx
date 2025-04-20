@@ -14,7 +14,7 @@ function PaymentPage() {
     // Загружаем информацию о курсе по courseId
     const fetchCourse = async () => {
       try {
-        const response = await fetch(`http://localhost:5252/api/courses/${courseId}`, {
+        const response = await fetch(`http://193.37.71.67:8000/api/courses/${courseId}`, {
           headers: { 'Content-Type': 'application/json' },
         });
 
@@ -51,7 +51,7 @@ function PaymentPage() {
       };
 
       // Отправляем POST-запрос на API
-      const response = await fetch('http://localhost:5252/api/payments', {
+      const response = await fetch('http://193.37.71.67:8000/api/payments', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

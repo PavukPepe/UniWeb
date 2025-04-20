@@ -19,7 +19,7 @@ export function MyCourseCard({ course, onDoubleClick }) {
       }
 
       try {
-        const response = await fetch(`http://localhost:5252/api/wishlists?userId=${userId}`, {
+        const response = await fetch(`http://193.37.71.67:8000/api/wishlists?userId=${userId}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem("token")}` // Добавляем токен
@@ -43,7 +43,7 @@ export function MyCourseCard({ course, onDoubleClick }) {
       if (!userId) return;
 
       try {
-        const response = await fetch(`http://localhost:5252/api/certificates?userId=${userId}&courseId=${course.courseId}`, {
+        const response = await fetch(`http://193.37.71.67:8000/api/certificates?userId=${userId}&courseId=${course.courseId}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem("token")}`
@@ -62,52 +62,6 @@ export function MyCourseCard({ course, onDoubleClick }) {
     fetchWishlists();
     checkCertificate();
   }, [course.courseId, userId]);
-
-  const toggleFavorite = async (e) => {
-    e.stopPropagation();
-    setError(null);
-
-    if (!userId) {
-      setError('Необходимо войти в аккаунт');
-      return;
-    }
-
-    try {
-      if (isFavorite) {
-        const response = await fetch(`http://localhost:5252/api/wishlists/${course.courseId}?userId=${userId}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem("token")}`
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Ошибка при удалении из избранного');
-        }
-
-        setIsFavorite(false);
-      } else {
-        const response = await fetch('http://localhost:5252/api/wishlists', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem("token")}`
-          },
-          body: JSON.stringify({ userId, courseId: course.courseId }),
-        });
-
-        if (!response.ok) {
-          throw new Error('Ошибка при добавлении в избранное');
-        }
-
-        setIsFavorite(true);
-      }
-    } catch (err) {
-      setError(err.message);
-      console.error('Ошибка при обновлении избранного:', err);
-    }
-  };
 
   // Вычисляем прогресс
   const allSteps = course.blocks
@@ -132,7 +86,7 @@ export function MyCourseCard({ course, onDoubleClick }) {
         certificateCode: `CERT-${course.id}-${userId}-${Date.now()}` // Генерируем уникальный код
       };
 
-      const response = await fetch('http://localhost:5252/api/certificates', {
+      const response = await fetch('http://193.37.71.67:8000/api/certificates', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -158,11 +112,6 @@ export function MyCourseCard({ course, onDoubleClick }) {
       <div className="position-relative" style={{ height: "180px" }}>
         <img src={course.logo || "/course.png"}
   alt={course.title || "Без названия"} className="w-100 h-100 object-fit-cover" />
-        {/* <i
-          onClick={toggleFavorite}
-          className={`bi ${isFavorite ? 'bi-heart-fill' : 'bi-heart'} position-absolute top-0 end-0 m-2 p-1 favorite-btn`}
-          style={{ color: isFavorite ? '#FF3800' : 'white', fontSize: '1.2rem', cursor: 'pointer' }}
-        ></i> */}
       </div>
 
       <div className="card-body">
@@ -173,7 +122,7 @@ export function MyCourseCard({ course, onDoubleClick }) {
           <p className="card-title col">{course.title || "Без названия"}</p>
           <p className="card-title col d-flex justify-content-end"></p>
         </div>
-        <div className="d-flex align-items-center mb-2">
+        {/* <div className="d-flex align-items-center mb-2">
           {Array(5)
             .fill(null)
             .map((_, i) => (
@@ -193,8 +142,8 @@ export function MyCourseCard({ course, onDoubleClick }) {
                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
               </svg>
             ))}
-          <span className="text-secondary ms-1 small">/{course.review || 0} отзывов</span>
-        </div>
+          <span className="text-secondary ms-1 small">/{course.reviews.length || 0} отзывов</span>
+        </div> */}
 
         {/* Прогресс-бар */}
         <div className="mb-3">

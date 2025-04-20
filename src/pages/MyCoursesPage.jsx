@@ -28,7 +28,7 @@ function MyCoursesPage() {
       }
 
       try {
-        const response = await fetch(`http://localhost:5252/api/Payments/?userId=${userId}`, {
+        const response = await fetch(`http://193.37.71.67:8000/api/Payments/?userId=${userId}`, {
           headers: {
             'Content-Type': 'application/json',
           },
@@ -48,7 +48,7 @@ function MyCoursesPage() {
         const coursePromises = enrollmentIds.map(async (courseId) => {
           try {
             const courseResponse = await fetch(
-              `http://localhost:5252/api/Courses/${courseId}?userId=${userId}`,
+              `http://193.37.71.67:8000/api/Courses/${courseId}?userId=${userId}`,
               { headers: { 'Content-Type': 'application/json' } }
             );
             if (!courseResponse.ok) {

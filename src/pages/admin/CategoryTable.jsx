@@ -17,7 +17,7 @@ function CategoriesTable() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch("http://localhost:5252/api/categories", {
+      const response = await fetch("http://193.37.71.67:8000/api/categories", {
         headers: { "Content-Type": "application/json" },
       });
 
@@ -43,7 +43,7 @@ function CategoriesTable() {
         categoryName: editFormData.categoryName,
       };
 
-      const response = await fetch(`http://localhost:5252/api/categories/${categoryId}`, {
+      const response = await fetch(`http://193.37.71.67:8000/api/categories/${categoryId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedCategory),
@@ -69,7 +69,7 @@ function CategoriesTable() {
   const handleDelete = async (categoryId) => {
     if (window.confirm("Вы уверены, что хотите удалить эту категорию?")) {
       try {
-        const response = await fetch(`http://localhost:5252/api/categories/${categoryId}`, {
+        const response = await fetch(`http://193.37.71.67:8000/api/categories/${categoryId}`, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
         });
@@ -103,7 +103,7 @@ function CategoriesTable() {
         categoryName: newCategoryName,
       };
 
-      const response = await fetch("http://localhost:5252/api/categories", {
+      const response = await fetch("http://193.37.71.67:8000/api/categories", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newCategory),

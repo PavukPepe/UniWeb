@@ -29,7 +29,7 @@ function FavoritesPage() {
 
       try {
         // Получаем список избранных курсов с сервера
-        const response = await fetch(`http://localhost:5252/api/wishlists?userId=${userId}`, {
+        const response = await fetch(`http://193.37.71.67:8000/api/wishlists?userId=${userId}`, {
           headers: {
             'Content-Type': 'application/json',
           },
@@ -47,7 +47,7 @@ function FavoritesPage() {
         }
 
         // Запрашиваем данные о курсах
-        const coursesResponse = await fetch('http://localhost:5252/api/courses', {
+        const coursesResponse = await fetch('http://193.37.71.67:8000/api/courses', {
           headers: { 'Content-Type': 'application/json' },
         });
 

@@ -63,9 +63,14 @@ function PaymentPage() {
         throw new Error('Ошибка при обработке оплаты');
       }
 
-      const result = await response.json();
-      setPaymentStatus('Оплата успешно завершена!');
-      alert('Курс успешно приобретен!');
+      try{
+        const result = await response.json();
+        setPaymentStatus('Оплата успешно завершена!');
+        alert('Курс успешно приобретен!');
+      }
+      catch{
+        alert('Попытка повторной поукпки')
+      }
       navigate('/home'); // Возвращаем пользователя на главную страницу после оплаты
     } catch (err) {
       setError(err.message);

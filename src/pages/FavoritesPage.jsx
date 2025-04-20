@@ -9,8 +9,10 @@ import './HomePage.css';
 
 function FavoritesPage() {
   const [courses, setCourses] = useState([]);
+  const [filteredCourses, setFilteredCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
   // Получаем userId из localStorage
@@ -42,6 +44,7 @@ function FavoritesPage() {
         const wishlistIds = await response.json();
         if (wishlistIds.length === 0) {
           setCourses([]);
+          setFilteredCourses([]);
           setIsLoading(false);
           return;
         }
@@ -56,6 +59,7 @@ function FavoritesPage() {
         const allCourses = await coursesResponse.json();
         const favoriteCourses = allCourses.filter(course => wishlistIds.includes(course.courseId));
         setCourses(favoriteCourses);
+        setFilteredCourses(favoriteCourses);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -66,8 +70,20 @@ function FavoritesPage() {
     fetchFavoriteCourses();
   }, [userId]);
 
+  useEffect(() => {
+    const filtered = courses.filter(course =>
+      course.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredCourses(filtered);
+  }, [searchQuery, courses]);
+
   const handleCourseClick = (courseId) => {
     navigate(`/course/${courseId}`);
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
   };
 
   return (
@@ -75,7 +91,7 @@ function FavoritesPage() {
       <MainNav />
       <main className="flex-grow-1 p-4">
         <div className="mb-4">
-          <SearchBar />
+          <SearchBar onSearch={handleSearch} />
         </div>
 
         <div className="mb-4">
@@ -90,13 +106,15 @@ function FavoritesPage() {
               <span className="visually-hidden">Загрузка...</span>
             </div>
           </div>
-        ) : courses.length === 0 ? (
+        ) : filteredCourses.length === 0 ? (
           <div className="text-white text-center py-5">
-            У вас пока нет избранных курсов. Добавьте курсы в избранное, чтобы они отобразились здесь.
+            {searchQuery
+              ? `Курсы по запросу "${searchQuery}" не найдены`
+              : `У вас пока нет избранных курсов. Добавьте курсы в избранное, чтобы они отобразились здесь.`}
           </div>
         ) : (
           <div className="row g-4">
-            {courses.map((course) => (
+            {filteredCourses.map((course) => (
               <div key={course.courseId} className="col-12 col-md-6 col-lg-4">
                 <CourseCard course={course} onClick={() => handleCourseClick(course.courseId)} />
               </div>

@@ -11,9 +11,11 @@ import './HomePage.css';
 function HomePage() {
   const [categories, setCategories] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [filteredCourses, setFilteredCourses] = useState([]);
   const [activeCategory, setActiveCategory] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,7 +28,7 @@ function HomePage() {
         const data = await response.json();
         setCategories(data);
         if (data.length > 0) {
-          setActiveCategory(data[0]); // Устанавливаем первую категорию как активную
+          setActiveCategory(data[0]);
         } else {
           setError("Категории не найдены");
           setIsLoading(false);
@@ -56,6 +58,7 @@ function HomePage() {
         const data = await response.json();
         const approvedCourses = data.filter(course => course.isApproved === true);
         setCourses(approvedCourses);
+        setFilteredCourses(approvedCourses);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -65,12 +68,25 @@ function HomePage() {
     fetchCourses();
   }, [activeCategory]);
 
+  useEffect(() => {
+    const filtered = courses.filter(course =>
+      course.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredCourses(filtered);
+  }, [searchQuery, courses]);
+
   const handleCategoryChange = (category) => {
     setActiveCategory(category);
+    setSearchQuery(""); // Clear search when changing category
   };
 
   const handleCourseClick = (courseId) => {
     navigate(`/course/${courseId}`);
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
   };
 
   return (
@@ -78,7 +94,7 @@ function HomePage() {
       <MainNav />
       <main className="flex-grow-1 p-4">
         <div className="mb-4">
-          <SearchBar />
+          <SearchBar onSearch={handleSearch} />
         </div>
 
         <div className="mb-4 align-items-center justify-content-center d-flex">
@@ -97,13 +113,15 @@ function HomePage() {
           <div className="text-danger text-center py-5">{error}</div>
         ) : isLoading ? (
           <div className="text-white text-center py-5">Загрузка...</div>
-        ) : courses.length === 0 ? (
+        ) : filteredCourses.length === 0 ? (
           <div className="text-white text-center py-5">
-            В категории "{activeCategory?.categoryName}" курсы не найдены
+            {searchQuery
+              ? `Курсы по запросу "${searchQuery}" не найдены`
+              : `В категории "${activeCategory?.categoryName}" курсы не найдены`}
           </div>
         ) : (
           <div className="row g-4">
-            {courses.map((course) => (
+            {filteredCourses.map((course) => (
               <div key={course.courseId} className="col-12 col-md-6 col-lg-4">
                 <CourseCard course={course} onDoubleClick={() => handleCourseClick(course.courseId)} />
               </div>

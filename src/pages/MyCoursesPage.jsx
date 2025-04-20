@@ -5,13 +5,15 @@ import { useNavigate } from "react-router-dom";
 import { CourseCard } from "../сomponents/CourseCard.jsx";
 import MainNav from "../сomponents/MainNav.jsx";
 import { SearchBar } from "../сomponents/SearchBar.jsx";
-import './HomePage.css';
 import { MyCourseCard } from "../сomponents/MyCourseCard.jsx";
+import './HomePage.css';
 
 function MyCoursesPage() {
   const [courses, setCourses] = useState([]);
+  const [filteredCourses, setFilteredCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
   const userId = localStorage.getItem('userId');
@@ -41,6 +43,7 @@ function MyCoursesPage() {
         const enrollmentIds = await response.json();
         if (enrollmentIds.length === 0) {
           setCourses([]);
+          setFilteredCourses([]);
           setIsLoading(false);
           return;
         }
@@ -67,6 +70,7 @@ function MyCoursesPage() {
         const enrolledCourses = (await Promise.all(coursePromises)).filter(Boolean);
         console.log("Все загруженные курсы:", enrolledCourses); // Отладка
         setCourses(enrolledCourses);
+        setFilteredCourses(enrolledCourses);
       } catch (err) {
         setError(err.message);
         console.error('Ошибка:', err);
@@ -78,9 +82,21 @@ function MyCoursesPage() {
     fetchEnrolledCourses();
   }, [userId]);
 
+  useEffect(() => {
+    const filtered = courses.filter(course =>
+      course.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredCourses(filtered);
+  }, [searchQuery, courses]);
+
   const handleCourseClick = (courseId) => {
     console.log("Переход к курсу:", courseId); // Отладка
     navigate(`/courses/${courseId}`);
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
   };
 
   return (
@@ -88,7 +104,7 @@ function MyCoursesPage() {
       <MainNav />
       <main className="flex-grow-1 p-4">
         <div className="mb-4">
-          <SearchBar />
+          <SearchBar onSearch={handleSearch} />
         </div>
 
         <div className="mb-4">
@@ -102,13 +118,15 @@ function MyCoursesPage() {
               <span className="visually-hidden">Загрузка...</span>
             </div>
           </div>
-        ) : courses.length === 0 ? (
+        ) : filteredCourses.length === 0 ? (
           <div className="text-white text-center py-5">
-            У вас пока нет оплаченных курсов. Оплатите курсы, чтобы они отобразились здесь.
+            {searchQuery
+              ? `Курсы по запросу "${searchQuery}" не найдены`
+              : `У вас пока нет оплаченных курсов. Оплатите курсы, чтобы они отобразились здесь.`}
           </div>
         ) : (
           <div className="row g-4">
-            {courses.map((course) => (
+            {filteredCourses.map((course) => (
               <div key={course.id} className="col-12 col-md-6 col-lg-4">
                 <MyCourseCard course={course} onClick={() => handleCourseClick(course.id)} />
               </div>

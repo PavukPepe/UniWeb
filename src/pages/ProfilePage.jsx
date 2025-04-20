@@ -301,21 +301,18 @@ function ProfilePage() {
                 <div className="text-danger text-center py-5">{error}</div>
               ) : (
                 <div className="row dark-gray p-3">
-                  <div className="col-md-4 text-center mb-3 mb-md-0">
+                  <div className="col-md-4  m-0 p-0">
                     <img
                       src={
                         userData?.profilePicture ||
                         "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-koyrjhw89Qu9a4gBkl0hn2AD61QOwB.png"
                       }
                       alt="Фото профиля"
-                      className="img-fluid rounded mb-2"
-                      style={{ height: 250, width: 250 }}
+                      className="img-fluid rounded m-0 w-100"
+                      style={{ height: 250, maxWidth:250}}
                     />
-                    <button className="btn btn-outline-light btn-sm mt-2">
-                      <i className="bi bi-pencil me-1"></i> Изменить фото
-                    </button>
                   </div>
-                  <div className="col-md-8">
+                  <div className="col-md-8 p-0">
                     <div className="mb-3 row">
                       <label className="col-sm-3 col-form-label text-secondary">
                         Фамилия
@@ -376,6 +373,21 @@ function ProfilePage() {
                         />
                       </div>
                     </div>
+                    <div className="mb-3 row">
+                      <label className="col-sm-3 col-form-label text-secondary">
+                        URL-Фото
+                      </label>
+                      <div className="col-sm-9 d-flex align-items-center">
+                        <input
+                          type="text"
+                          name="profilePicture"
+                          className="text-light border-secondary"
+                          value={formData.profilePicture}
+                          onChange={handleInputChange}
+                          readOnly={!isEditing}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -384,7 +396,7 @@ function ProfilePage() {
           <div className="col-4 pe-0 d-flex flex-column">
             <div className="d-flex justify-content-between align-items-center m-3 mt-0 ms-3">
               {isAdmin ? (
-                <h2 className="h5 m-0 fs-4 fw-bold">Администрирование</h2>
+                <h2 className="h5 m-0 fs-4 fw-bold">Админ панель</h2>
               ) : (
                 <h2 className="h5 m-0 fs-4 fw-bold">Сертификаты</h2>
               )}
@@ -444,10 +456,10 @@ function ProfilePage() {
         {/* Статистика продаж */}
         {isAuthor && (
           <div className="row">
-            <div className="d-flex justify-content-between align-items-center m-3 mt-0 ms-1">
-              <h2 className="h5 m-0 mt-3 fs-4 fw-bold">Статистика продаж за неделю</h2>
+            <div className="d-flex justify-content-between align-items-center m-3 mt-3 ms-1">
+              <h2 className="h5 m-0 fs-4 fw-bold">Статистика продаж за неделю</h2>
               <button
-                className="btn btn-outline-light btn-sm"
+                className="btn btn-outline-light btn-sm col-2"
                 onClick={handleExportToPDF}
                 disabled={isLoading || salesData.length === 0}
               >
@@ -465,7 +477,7 @@ function ProfilePage() {
                 <div className="row">
                   {salesData.map((sale) => (
                     <div key={sale.courseId} className="col-md-4 m-0 p-1">
-                      <div className="p-3 card-background text-light border-secondary">
+                      <div className="card card-background text-light">
                         <div className="card-body">
                           <h6 className="card-title">{sale.courseTitle}</h6>
                           <p className="card-text">Продано: {sale.salesCount}</p>

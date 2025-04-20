@@ -99,7 +99,7 @@ export default function CoursePage() {
         body: JSON.stringify({
           reviewText: newReview.text, // Соответствует ReviewText в модели
           userRating: newReview.rating || 0, // Рейтинг по умолчанию 0
-          userName: "Anonymous" // Можно убрать, если используется UserId
+          userId: localStorage.getItem("userId"), // Можно убрать, если используется UserId
         }),
       });
 
@@ -138,7 +138,7 @@ export default function CoursePage() {
               course.blocks.map((block) => (
                 <div key={block.id} className="border-secondary mb-3">
                   <div
-                    className="card-header d-flex justify-content-between align-items-center mb-2"
+                    className="d-flex justify-content-between align-items-center mb-2"
                     onClick={() => toggleModule(block.id)}
                     style={{ cursor: "pointer" }}
                   >
@@ -194,49 +194,54 @@ export default function CoursePage() {
         </div>
         <div className="col-4">
           <img src={course.logo} className="dark-gray mb-3" alt="" style={{ height: 400, width: 400 }} />
-          <div className="dark-gray p-3" style={{ width: 400 }}>
-              <h2 className="h5 m-0 fs-4 fw-bold" style={{ width: 400 }}>Автор курса</h2>
+          <div className="dark-gray d-flex p-3" style={{ width: 400 }}>
+            <div>
+              <img src={course.instructorImg} alt="" style={{ height:80, width:80, borderRadius: 40 }} className="me-3"/>
+            </div>
+            <div>
+              <h2 className="h5 m-0 fs-4 fw-bold">Автор курса</h2>
               <p>{course.instructor || "Без автора"}</p>
+            </div>
           </div>
         </div>
-          <div className="m-0 p-0">
-            <h5 className="text-white mb-3">Отзывы</h5>
-            {reviews.length === 0 ? (
-              <p className="col-8 p-3 dark-gray">Отзывов нет</p>
-            ) : (
-              reviews.map((review) => (
-                <div key={review.id} className="col-8 p-3 dark-gray border-secondary mb-2 p-2 text-white rounded ">
-                  <p>{review.text}</p>
-                  <small className="">Рейтинг: {review.rating || 0}/5 - {review.userName}, {new Date(review.date).toLocaleDateString()}</small>
-                </div>
-              ))
-            )}
-            {/* Форма для добавления отзыва */}
-            <form onSubmit={handleSubmitReview} className="mt-3 col-8 p-3 dark-gray">
-              <div className="mb-3">
-                <textarea
-                  className="form-control bg-dark text-white"
-                  placeholder="Оставьте ваш отзыв..."
-                  value={newReview.text}
-                  onChange={(e) => setNewReview({ ...newReview, text: e.target.value })}
-                  rows="3"
-                ></textarea>
+        <div className="m-0 p-0">
+          <h5 className="text-white mb-3">Отзывы</h5>
+          {reviews.length === 0 ? (
+            <p className="col-8 p-3 dark-gray">Отзывов нет</p>
+          ) : (
+            reviews.map((review) => (
+              <div key={review.id} className="col-8 p-3 dark-gray border-secondary mb-2 p-2 text-white rounded ">
+                <p>{review.text}</p>
+                <small className="">Рейтинг: {review.rating || 0}/5 - {review.userName}, {new Date(review.date).toLocaleDateString()}</small>
               </div>
-              <div className="mb-3">
-                <label className="form-label text-white">Рейтинг (0-5):</label>
-                <input
-                  type="number"
-                  className="form-control bg-dark text-white"
-                  min="0"
-                  max="5"
-                  value={newReview.rating}
-                  onChange={(e) => setNewReview({ ...newReview, rating: parseInt(e.target.value) || 0 })}
-                  placeholder="Оценка"
-                />
-              </div>
-              <button type="submit" className="btn btn-outline-light">Отправить отзыв</button>
-            </form>
-          </div>
+            ))
+          )}
+          {/* Форма для добавления отзыва */}
+          <form onSubmit={handleSubmitReview} className="mt-3 col-8 p-3 dark-gray">
+            <div className="mb-3">
+              <textarea
+                className="form-control bg-dark text-white"
+                placeholder="Оставьте ваш отзыв..."
+                value={newReview.text}
+                onChange={(e) => setNewReview({ ...newReview, text: e.target.value })}
+                rows="3"
+              ></textarea>
+            </div>
+            <div className="mb-3">
+              <label className="form-label text-white">Рейтинг (0-5):</label>
+              <input
+                type="number"
+                className="form-control bg-dark text-white"
+                min="0"
+                max="5"
+                value={newReview.rating}
+                onChange={(e) => setNewReview({ ...newReview, rating: parseInt(e.target.value) || 0 })}
+                placeholder="Оценка"
+              />
+            </div>
+            <button type="submit" className="btn btn-outline-light">Отправить отзыв</button>
+          </form>
+        </div>
       </main>
     </div>
   );

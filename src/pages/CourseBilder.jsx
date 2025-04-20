@@ -18,6 +18,7 @@ function CourseBuilder() {
   const [courseTitle, setCourseTitle] = useState("");
   const [courseDescription, setCourseDescription] = useState("");
   const [categoryName, setCourseCategory] = useState("");
+  const [Price, setCoursePrice] = useState("");
   const [categories, setCategories] = useState([]);
   const [blocks, setBlocks] = useState([]);
   const [editingItem, setEditingItem] = useState(null);
@@ -59,7 +60,8 @@ function CourseBuilder() {
                 setCourseTitle(data.title);
                 setCourseDescription(data.description);
                 setCourseCategory(data.categoryId || "");
-                setCourseImageUrl(data.imageUrl || ""); // Устанавливаем URL изображения
+                setCourseImageUrl(data.logo || ""); // Устанавливаем URL изображения
+                setCoursePrice(parseInt(data.price) || 0); // Устанавливаем URL изображения
                 setBlocks(
                     data.blocks.map((block, blockIndex) => ({
                         id: block.id,
@@ -381,6 +383,7 @@ function CourseBuilder() {
           userId: localStorage.getItem("userId"),
           categoryId: parseInt(categoryName, 10),
           imageUrl: courseImageUrl, // Добавляем URL изображения
+          price: Price,
           blocks: blocks.map((block, blockIndex) => ({
               id: typeof block.id === "string" && block.id.startsWith("temp_") ? null : parseInt(block.id),
               title: block.title,
@@ -438,7 +441,8 @@ function CourseBuilder() {
                       })),
                   }))
               );
-              setCourseImageUrl(result.imageUrl || ""); // Обновляем URL изображения
+              setCourseImageUrl(result.imageUrl || "");
+              setCoursePrice(result.Price); // Обновляем URL изображения
           }
       } catch (error) {
           console.error("Ошибка при сохранении курса:", error);
@@ -459,7 +463,7 @@ function CourseBuilder() {
             </button>
           </header>
           <div className="row">
-            <div className="mb-3 col-4">
+            <div className="mb-3 col-3">
               <input
                 type="text"
                 placeholder="Введите название курса..."
@@ -468,7 +472,7 @@ function CourseBuilder() {
                 onChange={(e) => setCourseTitle(e.target.value)}
               />
             </div>
-            <div className="mb-3 col-4">
+            <div className="mb-3 col-3">
               <select
                 className="form-select bg-dark text-light border-secondary"
                 value={categoryName}
@@ -482,13 +486,22 @@ function CourseBuilder() {
                 ))}
               </select>
             </div>
-            <div className="mb-3 col-4">
+            <div className="mb-3 col-3">
               <input
                 type="url"
                 placeholder="Введите ссылку на фото курса..."
                 className="form-control bg-dark text-light border-secondary"
                 value={courseImageUrl}
                 onChange={(e) => setCourseImageUrl(e.target.value)}
+              />
+            </div>
+            <div className="mb-3 col-3">
+              <input
+                type="numeric"
+                placeholder="Цена курса"
+                className="form-control bg-dark text-light border-secondary"
+                value={Price}
+                onChange={(e) => setCoursePrice(e.target.value)}
               />
             </div>
           </div>

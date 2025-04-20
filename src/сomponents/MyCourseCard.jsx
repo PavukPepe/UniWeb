@@ -122,28 +122,7 @@ export function MyCourseCard({ course, onDoubleClick }) {
           <p className="card-title col">{course.title || "Без названия"}</p>
           <p className="card-title col d-flex justify-content-end"></p>
         </div>
-        {/* <div className="d-flex align-items-center mb-2">
-          {Array(5)
-            .fill(null)
-            .map((_, i) => (
-              <svg
-                key={i}
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill={i < (course.rating || 0) ? "#FF3800" : "#495057"}
-                stroke="transparent"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                style={{ marginRight: "2px" }}
-              >
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-              </svg>
-            ))}
-          <span className="text-secondary ms-1 small">/{course.reviews.length || 0} отзывов</span>
-        </div> */}
+
 
         {/* Прогресс-бар */}
         <div className="mb-3">

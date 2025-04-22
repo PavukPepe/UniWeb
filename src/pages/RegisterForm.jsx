@@ -23,19 +23,32 @@ const RegisterForm = () => {
     });
   };
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Пароли не совпадают');
+    // Email validation
+    if (!validateEmail(formData.email)) {
+      setError('Неверный формат email');
       setLoading(false);
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError('Пароль должен содержать минимум 6 символов');
+    // Password validation
+    if (formData.password.length < 8) {
+      setError('Пароль должен содержать минимум 8 символов');
+      setLoading(false);
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Пароли не совпадают');
       setLoading(false);
       return;
     }
